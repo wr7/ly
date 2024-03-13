@@ -1,6 +1,8 @@
 #ifndef H_LY_UTILS
 #define H_LY_UTILS
 
+#define ARRAY_LENGTH(array) (sizeof(array)/sizeof(array[0]))
+
 #include "draw.h"
 #include "inputs.h"
 #include "config.h"

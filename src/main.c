@@ -3,6 +3,7 @@
 #include "dragonfail.h"
 #include "termbox.h"
 
+#include "animations.h"
 #include "draw.h"
 #include "inputs.h"
 #include "login.h"
@@ -163,7 +164,7 @@ int main(int argc, char** argv)
 
 	if (config.animate)
 	{
-		animate_init(&buf);
+		animation_init(&buf);
 
 		if (dgn_catch())
 		{
@@ -191,7 +192,9 @@ int main(int argc, char** argv)
 			{
 				(*input_handles[active_input])(input_structs[active_input], NULL);
 				tb_clear();
-				animate(&buf);
+				if(config.animate) {
+					animate(&buf);
+				}
 				draw_bigclock(&buf);
 				draw_box(&buf);
 				draw_clock(&buf);

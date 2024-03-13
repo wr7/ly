@@ -33,6 +33,7 @@ INCL+= -I$(SUBD)/termbox_next/src
 SRCS = $(SRCD)/main.c
 SRCS += $(SRCD)/config.c
 SRCS += $(SRCD)/draw.c
+SRCS += $(SRCD)/animations.c
 SRCS += $(SRCD)/inputs.c
 SRCS += $(SRCD)/login.c
 SRCS += $(SRCD)/utils.c
