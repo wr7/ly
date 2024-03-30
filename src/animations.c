@@ -25,13 +25,13 @@ static void matrix(struct matrix_state *s, struct term_buf* buf);
 static void matrix_free(struct matrix_state* state);
 
 static const struct animation ANIMATIONS[] = {
-	(const struct animation) {
+	{
 		// Cast `doom_state *` to `void *`
 		.init = (void *(*)(struct term_buf *buf)) doom_init,
 		.free = (void (*)(void *state)) doom_free,
 		.draw = (void (*)(void *state, struct term_buf *buf)) doom,
 	},
-	(const struct animation) {
+	{
 		// Cast `matrix_state *` to `void *`
 		.init = (void *(*)(struct term_buf *buf)) matrix_init,
 		.free = (void (*)(void *state)) matrix_free,
