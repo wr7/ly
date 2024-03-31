@@ -1,8 +1,19 @@
 
-# Ly - a TUI display manager
-![Ly screenshot](https://user-images.githubusercontent.com/5473047/88958888-65efbf80-d2a1-11ea-8ae5-3f263bce9cce.png "Ly screenshot")
+# Lye - a TUI display manager
+![Lye screenshot](https://user-images.githubusercontent.com/5473047/88958888-65efbf80-d2a1-11ea-8ae5-3f263bce9cce.png "Lye screenshot")
 
-Ly is a lightweight TUI (ncurses-like) display manager for Linux and BSD.
+Lye (Ly Extended) is a fork of [Ly](https://github.com/fairyglade/ly), a lightweight TUI (ncurses-like) display manager for Linux and BSD.
+
+## Fork
+The upstream Ly hasn't been updated recently. Lye was made to add several bug fixes and features.
+
+I don't have enough time to rapidly work on Lye, but the long term plans of Lye are as follows:
+ - Clean up code
+   - Break up files
+   - Break up functions
+   - Reduce code size and complexity
+ - Add new animations
+ - Improve compatibility (notably with Nix)
 
 ## Dependencies
  - a C99 compiler (tested with tcc and gcc)
@@ -57,7 +68,7 @@ changing the source code won't be necessary :)
 ## Cloning and Compiling
 Clone the repository
 ```
-$ git clone --recurse-submodules https://github.com/fairyglade/ly
+$ git clone --recurse-submodules https://github.com/fairyglade/lye
 ```
 
 Change the directory to ly
@@ -133,12 +144,6 @@ The agetty service for the tty console where you are running ly should be disabl
 
 ```
 # rm /var/service/agetty-tty2
-```
-
-## Arch Linux Installation
-You can install ly from the [`[extra]` repos](https://archlinux.org/packages/extra/x86_64/ly/):
-```
-$ sudo pacman -S ly
 ```
 
 ## Configuration
