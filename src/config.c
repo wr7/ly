@@ -248,7 +248,7 @@ void lang_defaults() {
 
 void config_defaults() {
 	config.animate = false;
-	config.animation = 0;
+	config.animation = 1;
 	config.asterisk = '*';
 	config.bg = 0;
 	config.bigclock = false;

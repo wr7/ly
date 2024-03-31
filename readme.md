@@ -15,6 +15,13 @@ I don't have enough time to rapidly work on Lye, but the long term plans of Lye 
  - Add new animations
  - Improve compatibility (notably with Nix)
 
+## Animations
+Currently Lye has the following animations. The ones unique to lye are denoted with a star.
+
+ - Random - 0 (*)
+ - Doom fire - 1
+ - Matrix - 2
+
 ## Dependencies
  - a C99 compiler (tested with tcc and gcc)
  - a C standard library

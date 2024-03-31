@@ -67,6 +67,11 @@ void arg_config(void *data, char **pars, const int pars_count) {
 
 // ly!
 int main(int argc, char **argv) {
+	// seed random number generator
+	struct timeval t;
+	gettimeofday(&t, NULL);
+	srand(t.tv_sec ^ t.tv_usec);
+
 	// init error lib
 	log_init(dgn_init());
 

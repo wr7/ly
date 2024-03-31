@@ -16,6 +16,10 @@ struct animation {
 	void (*const draw)(void *state, struct term_buf *buf);
 };
 
+static struct random_state *random_init(struct term_buf *buf);
+static void random_free(struct random_state *state);
+static void random_draw(struct random_state *state, struct term_buf *term_buf);
+
 static struct doom_state *doom_init(struct term_buf *buf);
 static void doom_free(struct doom_state *state);
 static void doom(struct doom_state *state, struct term_buf *term_buf);
@@ -25,6 +29,12 @@ static void matrix(struct matrix_state *s, struct term_buf *buf);
 static void matrix_free(struct matrix_state *state);
 
 static const struct animation ANIMATIONS[] = {
+	{
+		// Cast `random_state *` to `void *`
+		.init = (void *(*)(struct term_buf *buf))random_init,
+		.free = (void (*)(void *state))random_free,
+		.draw = (void (*)(void *state, struct term_buf *buf))random_draw,
+	},
 	{
 		// Cast `doom_state *` to `void *`
 		.init = (void *(*)(struct term_buf *buf))doom_init,
@@ -81,6 +91,34 @@ void animation_free(struct term_buf *buf) {
 	const struct animation *const animation = &ANIMATIONS[config.animation];
 
 	animation->free(buf->animation_state);
+}
+
+// Random animation //
+
+struct random_state {
+	const struct animation *animation;
+	void *animation_state;
+};
+
+static struct random_state *random_init(struct term_buf *buf) {
+	const size_t animation_idx =
+		((size_t)rand()) % (ARRAY_LENGTH(ANIMATIONS) - 1) + 1;
+
+	struct random_state *state = malloc_or_throw(sizeof(*state));
+
+	state->animation = &ANIMATIONS[animation_idx];
+	state->animation_state = state->animation->init(buf);
+
+	return state;
+}
+
+static void random_free(struct random_state *state) {
+	state->animation->free(state->animation_state);
+	free(state);
+}
+
+static void random_draw(struct random_state *state, struct term_buf *term_buf) {
+	state->animation->draw(state->animation_state, term_buf);
 }
 
 // Doom animation //
