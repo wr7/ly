@@ -1,5 +1,5 @@
-#ifndef H_LY_INPUTS
-#define H_LY_INPUTS
+#ifndef H_LYE_INPUTS
+#define H_LYE_INPUTS
 
 #include "termbox.h"
 

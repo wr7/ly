@@ -64,11 +64,11 @@ The following desktop environments were tested with success
  - xfce
  - xmonad
 
-Ly should work with any X desktop environment, and provides
+Lye should work with any X desktop environment, and provides
 basic wayland support (sway works very well, for example).
 
 ## systemd?
-Unlike what you may have heard, Ly does not require `systemd`,
+Unlike what you may have heard, Lye does not require `systemd`,
 and was even specifically designed not to depend on `logind`.
 You should be able to make it work easily with a better init,
 changing the source code won't be necessary :)
@@ -76,12 +76,12 @@ changing the source code won't be necessary :)
 ## Cloning and Compiling
 Clone the repository
 ```
-$ git clone --recurse-submodules https://github.com/fairyglade/lye
+$ git clone --recurse-submodules https://github.com/wr7/lye
 ```
 
-Change the directory to ly
+Change the directory to lye
 ```
-$ cd ly
+$ cd lye
 ```
 
 Compile
@@ -95,18 +95,18 @@ or a terminal emulator (but desktop environments won't start)
 # make run
 ```
 
-Install Ly and the provided systemd service file
+Install Lye and the provided systemd service file
 ```
 # make install installsystemd
 ```
 
 Enable the service
 ```
-# systemctl enable ly.service
+# systemctl enable lye.service
 ```
 
-If you need to switch between ttys after Ly's start you also have to
-disable getty on Ly's tty to prevent "login" from spawning on top of it
+If you need to switch between ttys after Lye's start you also have to
+disable getty on Lye's tty to prevent "login" from spawning on top of it
 ```
 # systemctl disable getty@tty2.service
 ```
@@ -115,19 +115,19 @@ disable getty on Ly's tty to prevent "login" from spawning on top of it
 
 Clone, compile and test.
 
-Install Ly and the provided OpenRC service
+Install Lye and the provided OpenRC service
 ```
 # make install installopenrc
 ```
 
 Enable the service
 ```
-# rc-update add ly
+# rc-update add lye
 ```
 
-You can edit which tty Ly will start on by editing the `tty` option in the configuration file.
+You can edit which tty Lye will start on by editing the `tty` option in the configuration file.
 
-If you choose a tty that already has a login/getty running (has a basic login prompt), then you have to disable the getty so it doesn't respawn on top of ly
+If you choose a tty that already has a login/getty running (has a basic login prompt), then you have to disable the getty so it doesn't respawn on top of lye
 ```
 # rc-update del agetty.tty2
 ```
@@ -137,10 +137,10 @@ If you choose a tty that already has a login/getty running (has a basic login pr
 ```
 $ make
 # make install installrunit
-# ln -s /etc/sv/ly /var/service/
+# ln -s /etc/sv/lye /var/service/
 ```
 
-By default, ly will run on tty2. To change the tty it must be set in `/etc/ly/config.ini`
+By default, lye will run on tty2. To change the tty it must be set in `/etc/lye/config.ini`
 
 You should as well disable your existing display manager service if needed, e.g.:
 
@@ -148,14 +148,14 @@ You should as well disable your existing display manager service if needed, e.g.
 # rm /var/service/lxdm
 ```
 
-The agetty service for the tty console where you are running ly should be disabled. For instance, if you are running ly on tty2 (that's the default, check your `/etc/ly/config.ini`) you should disable the agetty-tty2 service like this:
+The agetty service for the tty console where you are running lye should be disabled. For instance, if you are running lye on tty2 (that's the default, check your `/etc/lye/config.ini`) you should disable the agetty-tty2 service like this:
 
 ```
 # rm /var/service/agetty-tty2
 ```
 
 ## Configuration
-You can find all the configuration in `/etc/ly/config.ini`.
+You can find all the configuration in `/etc/lye/config.ini`.
 The file is commented, and includes the default values.
 
 ## Controls
@@ -182,9 +182,5 @@ Take a look at your .xsession if X doesn't start, as it can interfere
 
 ## PSX DOOM fire animation
 To enable the famous PSX DOOM fire described by [Fabien Sanglard](http://fabiensanglard.net/doom_fire_psx/index.html),
-just uncomment `animate = true` in `/etc/ly/config.ini`. You may also
+just uncomment `animate = true` in `/etc/lye/config.ini`. You may also
 disable the main box borders with `hide_borders = true`.
-
-## Additional Information
-The name "Ly" is a tribute to the fairy from the game Rayman.
-Ly was tested by oxodao, who is some seriously awesome dude.

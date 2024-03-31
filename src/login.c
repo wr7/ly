@@ -253,7 +253,7 @@ void remove_utmp_entry(struct utmp *entry) {
 }
 
 void xauth(const char *display_name, const char *shell, char *pwd) {
-	const char *xauth_file = "lyxauth";
+	const char *xauth_file = "lyexauth";
 	char *xauth_dir = getenv("XDG_RUNTIME_DIR");
 	if((xauth_dir == NULL) || (*xauth_dir == '\0')) {
 		xauth_dir = getenv("XDG_CONFIG_HOME");
@@ -263,22 +263,22 @@ void xauth(const char *display_name, const char *shell, char *pwd) {
 			strcat(xauth_dir, "/.config");
 			stat(xauth_dir, &sb);
 			if(S_ISDIR(sb.st_mode)) {
-				strcat(xauth_dir, "/ly");
+				strcat(xauth_dir, "/lye");
 			} else {
 				xauth_dir = pwd;
-				xauth_file = ".lyxauth";
+				xauth_file = ".lyexauth";
 			}
 		} else {
-			strcat(xauth_dir, "/ly");
+			strcat(xauth_dir, "/lye");
 		}
 
-		// If .config/ly/ or XDG_CONFIG_HOME/ly/ doesn't exist and can't create
+		// If .config/lye/ or XDG_CONFIG_HOME/lye/ doesn't exist and can't create
 		// the directory, use pwd Passing pwd beforehand is safe since stat will
 		// always evaluate false
 		stat(xauth_dir, &sb);
 		if(!S_ISDIR(sb.st_mode) && mkdir(xauth_dir, 0777) == -1) {
 			xauth_dir = pwd;
-			xauth_file = ".lyxauth";
+			xauth_file = ".lyexauth";
 		}
 	}
 

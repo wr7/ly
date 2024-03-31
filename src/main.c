@@ -21,8 +21,8 @@
 
 #define ARG_COUNT 7
 
-#ifndef LY_VERSION
-#define LY_VERSION "0.6.0"
+#ifndef LYE_VERSION
+#define LYE_VERSION "0.6.0"
 #endif
 
 // global
@@ -31,13 +31,13 @@ struct config config;
 
 // args handles
 void arg_help(void *data, char **pars, const int pars_count) {
-	printf("If you want to configure Ly, please check the config file, usually "
-	       "located at /etc/ly/config.ini.\n");
+	printf("If you want to configure Lye, please check the config file, usually "
+	       "located at /etc/lye/config.ini.\n");
 	exit(0);
 }
 
 void arg_version(void *data, char **pars, const int pars_count) {
-	printf("Ly version %s\n", LY_VERSION);
+	printf("Lye version %s\n", LYE_VERSION);
 	exit(0);
 }
 
@@ -65,7 +65,7 @@ void arg_config(void *data, char **pars, const int pars_count) {
 	*((char **)data) = *pars;
 }
 
-// ly!
+// lye!
 int main(int argc, char **argv) {
 	// seed random number generator
 	struct timeval t;

@@ -12,7 +12,7 @@
 
 #ifndef DEBUG
 #define INI_LANG DATADIR "/lang/%s.ini"
-#define INI_CONFIG "/etc/ly/config.ini"
+#define INI_CONFIG "/etc/lye/config.ini"
 #else
 #define INI_LANG "../res/lang/%s.ini"
 #define INI_CONFIG "../res/config.ini"
@@ -275,8 +275,8 @@ void config_defaults() {
 	config.restart_cmd = strdup("/sbin/shutdown -r now");
 	config.restart_key = strdup("F2");
 	config.save = true;
-	config.save_file = strdup("/etc/ly/save");
-	config.service_name = strdup("ly");
+	config.save_file = strdup("/etc/lye/save");
+	config.service_name = strdup("lye");
 	config.shutdown_cmd = strdup("/sbin/shutdown -a now");
 	config.shutdown_key = strdup("F1");
 	config.term_reset_cmd = strdup("/usr/bin/tput reset");

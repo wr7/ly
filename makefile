@@ -1,9 +1,9 @@
-NAME = ly
+NAME = lye
 CC = gcc
 FLAGS = -std=c99 -pedantic -g
 FLAGS+= -Wall -Wextra -Werror=vla -Wno-unused-parameter
 #FLAGS+= -DDEBUG
-FLAGS+= -DLY_VERSION=\"$(shell git describe --long --tags | sed 's/\([^-]*-g\)/r\1/;s/-/./g')\"
+FLAGS+= -DLYE_VERSION=\"$(shell git describe --long --tags | sed 's/\([^-]*-g\)/r\1/;s/-/./g')\"
 LINK = -lpam -lxcb
 VALGRIND = --show-leak-kinds=all --track-origins=yes --leak-check=full --suppressions=../res/valgrind.supp
 CMD = ./$(NAME)
@@ -20,7 +20,7 @@ SUBD = sub
 RESD = res
 TESTD = tests
 
-DATADIR ?= ${DESTDIR}/etc/ly
+DATADIR ?= ${DESTDIR}/etc/lye
 FLAGS+= -DDATADIR=\"$(DATADIR)\"
 
 INCL = -I$(SRCD)
@@ -75,49 +75,49 @@ leakgrind: $(BIND)/$(NAME)
 	@less valgrind.log
 
 install: $(BIND)/$(NAME)
-	@echo "installing ly"
-	@install -dZ ${DESTDIR}/etc/ly
+	@echo "installing lye"
+	@install -dZ ${DESTDIR}/etc/lye
 	@install -DZ $(BIND)/$(NAME) -t ${DESTDIR}/usr/bin
-	@if [ -e ${DESTDIR}/etc/ly/config.ini ]; then \
-		cp ${DESTDIR}/etc/ly/config.ini ${DESTDIR}/etc/ly/config.ini.old; fi
-	@install -DZ $(RESD)/config.ini -t ${DESTDIR}/etc/ly
+	@if [ -e ${DESTDIR}/etc/lye/config.ini ]; then \
+		cp ${DESTDIR}/etc/lye/config.ini ${DESTDIR}/etc/lye/config.ini.old; fi
+	@install -DZ $(RESD)/config.ini -t ${DESTDIR}/etc/lye
 	@install -DZ $(RESD)/xsetup.sh -t $(DATADIR)
 	@install -DZ $(RESD)/wsetup.sh -t $(DATADIR)
 	@install -dZ $(DATADIR)/lang
 	@install -DZ $(RESD)/lang/* -t $(DATADIR)/lang
-	@install -DZ $(RESD)/pam.d/ly -m 644 -t ${DESTDIR}/etc/pam.d
+	@install -DZ $(RESD)/pam.d/lye -m 644 -t ${DESTDIR}/etc/pam.d
 
 installnoconf: $(BIND)/$(NAME)
-	@echo "installing ly without the configuration file"
-	@install -dZ ${DESTDIR}/etc/ly
+	@echo "installing lye without the configuration file"
+	@install -dZ ${DESTDIR}/etc/lye
 	@install -DZ $(BIND)/$(NAME) -t ${DESTDIR}/usr/bin
 	@install -DZ $(RESD)/xsetup.sh -t $(DATADIR)
 	@install -DZ $(RESD)/wsetup.sh -t $(DATADIR)
 	@install -dZ $(DATADIR)/lang
 	@install -DZ $(RESD)/lang/* -t $(DATADIR)/lang
-	@install -DZ $(RESD)/pam.d/ly -m 644 -t ${DESTDIR}/etc/pam.d
+	@install -DZ $(RESD)/pam.d/lye -m 644 -t ${DESTDIR}/etc/pam.d
 
 installsystemd:
 	@echo "installing systemd service"
-	@install -DZ $(RESD)/ly.service -m 644 -t ${DESTDIR}/usr/lib/systemd/system
+	@install -DZ $(RESD)/lye.service -m 644 -t ${DESTDIR}/usr/lib/systemd/system
 
 installopenrc:
 	@echo "installing openrc service"
-	@install -DZ $(RESD)/ly-openrc -m 755 -T ${DESTDIR}/etc/init.d/${NAME}
+	@install -DZ $(RESD)/lye-openrc -m 755 -T ${DESTDIR}/etc/init.d/${NAME}
 
 installrunit:
 	@echo "installing runit service"
-	@install -DZ $(RESD)/ly-runit-service/* -t ${DESTDIR}/etc/sv/ly
+	@install -DZ $(RESD)/lye-runit-service/* -t ${DESTDIR}/etc/sv/lye
 
 uninstall:
 	@echo "uninstalling"
-	@rm -rf ${DESTDIR}/etc/ly
+	@rm -rf ${DESTDIR}/etc/lye
 	@rm -rf $(DATADIR)
-	@rm -f ${DESTDIR}/usr/bin/ly
-	@rm -f ${DESTDIR}/usr/lib/systemd/system/ly.service
-	@rm -f ${DESTDIR}/etc/pam.d/ly
+	@rm -f ${DESTDIR}/usr/bin/lye
+	@rm -f ${DESTDIR}/usr/lib/systemd/system/lye.service
+	@rm -f ${DESTDIR}/etc/pam.d/lye
 	@rm -f ${DESTDIR}/etc/init.d/${NAME}
-	@rm -rf ${DESTDIR}/etc/sv/ly
+	@rm -rf ${DESTDIR}/etc/sv/lye
 
 clean:
 	@echo "cleaning"
