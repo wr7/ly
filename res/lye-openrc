@@ -1,6 +1,6 @@
 #!/sbin/openrc-run
 
-name="ly"
+name="lye"
 description="TUI Display Manager"
 
 ## Supervisor daemon
@@ -20,7 +20,7 @@ then
 fi
 
 ## Get the tty from the conf file
-CONFTTY=$(cat /etc/ly/config.ini | sed -n 's/^tty.*=[^1-9]*// p')
+CONFTTY=$(cat /etc/lye/config.ini | sed -n 's/^tty.*=[^1-9]*// p')
 
 ## The execution vars
 # If CONFTTY is empty then default to 2
@@ -29,7 +29,7 @@ TERM=linux
 BAUD=38400
 # If we don't have getty then we should have agetty
 command=${commandB:-$commandUL}
-command_args_foreground="-nl /usr/bin/ly $TTY $BAUD $TERM"
+command_args_foreground="-nl /usr/bin/lye $TTY $BAUD $TERM"
 
 depend() {
          after agetty

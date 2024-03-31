@@ -1,5 +1,5 @@
-#ifndef H_LY_UTILS
-#define H_LY_UTILS
+#ifndef H_LYE_UTILS
+#define H_LYE_UTILS
 
 #define ARRAY_LENGTH(array) (sizeof(array) / sizeof((array)[0]))
 #define UNUSED(obj) ((void)(obj))

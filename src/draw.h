@@ -1,5 +1,5 @@
-#ifndef H_LY_DRAW
-#define H_LY_DRAW
+#ifndef H_LYE_DRAW
+#define H_LYE_DRAW
 
 #include "inputs.h"
 #include "termbox.h"
