@@ -1,8 +1,7 @@
 #ifndef H_DRAGONFAIL_ERROR
 #define H_DRAGONFAIL_ERROR
 
-enum dgn_error
-{
+enum dgn_error {
 	DGN_OK, // do not remove
 
 	DGN_NULL,

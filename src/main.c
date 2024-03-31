@@ -4,20 +4,20 @@
 #include "termbox.h"
 
 #include "animations.h"
+#include "config.h"
 #include "draw.h"
 #include "inputs.h"
 #include "login.h"
 #include "utils.h"
-#include "config.h"
 
 #include <stdbool.h>
+#include <stddef.h>
 #include <stdint.h>
 #include <stdio.h>
-#include <stddef.h>
+#include <stdlib.h>
 #include <string.h>
 #include <sys/time.h>
 #include <unistd.h>
-#include <stdlib.h>
 
 #define ARG_COUNT 7
 
@@ -30,21 +30,19 @@ struct lang lang;
 struct config config;
 
 // args handles
-void arg_help(void* data, char** pars, const int pars_count)
-{
-	printf("If you want to configure Ly, please check the config file, usually located at /etc/ly/config.ini.\n");
-    exit(0);
+void arg_help(void *data, char **pars, const int pars_count) {
+	printf("If you want to configure Ly, please check the config file, usually "
+	       "located at /etc/ly/config.ini.\n");
+	exit(0);
 }
 
-void arg_version(void* data, char** pars, const int pars_count)
-{
-    printf("Ly version %s\n", LY_VERSION);
-    exit(0);
+void arg_version(void *data, char **pars, const int pars_count) {
+	printf("Ly version %s\n", LY_VERSION);
+	exit(0);
 }
 
 // low-level error messages
-void log_init(char** log)
-{
+void log_init(char **log) {
 	log[DGN_OK] = lang.err_dgn_oob;
 	log[DGN_NULL] = lang.err_null;
 	log[DGN_ALLOC] = lang.err_alloc;
@@ -63,14 +61,12 @@ void log_init(char** log)
 	log[DGN_HOSTNAME] = lang.err_hostname;
 }
 
-void arg_config(void* data, char** pars, const int pars_count)
-{
+void arg_config(void *data, char **pars, const int pars_count) {
 	*((char **)data) = *pars;
 }
 
 // ly!
-int main(int argc, char** argv)
-{
+int main(int argc, char **argv) {
 	// init error lib
 	log_init(dgn_init());
 
@@ -80,8 +76,7 @@ int main(int argc, char** argv)
 
 	char *config_path = NULL;
 	// parse args
-	const struct argoat_sprig sprigs[ARG_COUNT] =
-	{
+	const struct argoat_sprig sprigs[ARG_COUNT] = {
 		{NULL, 0, NULL, NULL},
 		{"config", 0, &config_path, arg_config},
 		{"c", 0, &config_path, arg_config},
@@ -102,8 +97,7 @@ int main(int argc, char** argv)
 	input_text(&login, config.max_login_len);
 	input_text(&password, config.max_password_len);
 
-	if (dgn_catch())
-	{
+	if(dgn_catch()) {
 		config_free();
 		lang_free();
 		return 1;
@@ -112,15 +106,13 @@ int main(int argc, char** argv)
 	config_load(config_path);
 	lang_load();
 
-	void* input_structs[3] =
-	{
-		(void*) &desktop,
-		(void*) &login,
-		(void*) &password,
+	void *input_structs[3] = {
+		(void *)&desktop,
+		(void *)&login,
+		(void *)&password,
 	};
 
-	void (*input_handles[3]) (void*, struct tb_event*) =
-	{
+	void (*input_handles[3])(void *, struct tb_event *) = {
 		handle_desktop,
 		handle_text,
 		handle_text,
@@ -130,8 +122,7 @@ int main(int argc, char** argv)
 	load(&desktop, &login);
 
 	// start termbox
-	if (tb_init() != 0)
-	{
+	if(tb_init() != 0) {
 		fprintf(stderr, "Failed to initialize termbox.\n");
 		abort();
 	}
@@ -142,15 +133,14 @@ int main(int argc, char** argv)
 	struct tb_event event;
 	struct term_buf buf;
 
-	//Place the curser on the login field if there is no saved username, if there is, place the curser on the password field
+	// Place the curser on the login field if there is no saved username, if
+	// there is, place the curser on the password field
 	uint8_t active_input;
-        if (config.default_input == LOGIN_INPUT && login.text != login.end){
-        	active_input = PASSWORD_INPUT;
-        }
-        else{
-        	active_input = config.default_input;
-        }
-
+	if(config.default_input == LOGIN_INPUT && login.text != login.end) {
+		active_input = PASSWORD_INPUT;
+	} else {
+		active_input = config.default_input;
+	}
 
 	// init drawing stuff
 	draw_init(&buf);
@@ -162,12 +152,10 @@ int main(int argc, char** argv)
 	position_input(&buf, &desktop, &login, &password);
 	(*input_handles[active_input])(input_structs[active_input], NULL);
 
-	if (config.animate)
-	{
+	if(config.animate) {
 		animation_init(&buf);
 
-		if (dgn_catch())
-		{
+		if(dgn_catch()) {
 			config.animate = false;
 			dgn_reset();
 		}
@@ -184,13 +172,11 @@ int main(int argc, char** argv)
 	switch_tty(&buf);
 
 	// main loop
-	while (run)
-	{
-		if (update)
-		{
-			if (auth_fails < 10)
-			{
-				(*input_handles[active_input])(input_structs[active_input], NULL);
+	while(run) {
+		if(update) {
+			if(auth_fails < 10) {
+				(*input_handles[active_input])(input_structs[active_input],
+				                               NULL);
 				tb_clear();
 				if(config.animate) {
 					animate(&buf);
@@ -207,9 +193,7 @@ int main(int argc, char** argv)
 				draw_input(&login);
 				draw_input_mask(&password);
 				update = config.animate;
-			}
-			else
-			{
+			} else {
 				usleep(10000);
 				update = cascade(&buf, &auth_fails);
 			}
@@ -219,36 +203,28 @@ int main(int argc, char** argv)
 
 		int timeout = -1;
 
-		if (config.animate)
-		{
+		if(config.animate) {
 			timeout = config.min_refresh_delta;
-		}
-		else
-		{
+		} else {
 			struct timeval tv;
 			gettimeofday(&tv, NULL);
-			if (config.bigclock)
+			if(config.bigclock)
 				timeout = (60 - tv.tv_sec % 60) * 1000 - tv.tv_usec / 1000 + 1;
-			if (config.clock)
+			if(config.clock)
 				timeout = 1000 - tv.tv_usec / 1000 + 1;
 		}
 
-		if (timeout == -1)
-        {
-            error = tb_poll_event(&event);
-        }
-		else
-        {
-            error = tb_peek_event(&event, timeout);
-        }
+		if(timeout == -1) {
+			error = tb_poll_event(&event);
+		} else {
+			error = tb_peek_event(&event, timeout);
+		}
 
-		if (error < 0)
-		{
+		if(error < 0) {
 			continue;
 		}
 
-		if (event.type == TB_EVENT_KEY)
-		{
+		if(event.type == TB_EVENT_KEY) {
 			char shutdown_key[4];
 			memset(shutdown_key, '\0', sizeof(shutdown_key));
 			strcpy(shutdown_key, config.shutdown_key);
@@ -259,103 +235,90 @@ int main(int argc, char** argv)
 			strcpy(restart_key, config.restart_key);
 			memcpy(restart_key, "0", 1);
 
-			switch (event.key)
-			{
-			case TB_KEY_F1:
-			case TB_KEY_F2:
-			case TB_KEY_F3:
-			case TB_KEY_F4:
-			case TB_KEY_F5:
-			case TB_KEY_F6:
-			case TB_KEY_F7:
-			case TB_KEY_F8:
-			case TB_KEY_F9:
-			case TB_KEY_F10:
-			case TB_KEY_F11:
-			case TB_KEY_F12:
-				if( 0xFFFF - event.key + 1 == atoi(shutdown_key) )
-				{
-					shutdown = true;
+			switch(event.key) {
+				case TB_KEY_F1:
+				case TB_KEY_F2:
+				case TB_KEY_F3:
+				case TB_KEY_F4:
+				case TB_KEY_F5:
+				case TB_KEY_F6:
+				case TB_KEY_F7:
+				case TB_KEY_F8:
+				case TB_KEY_F9:
+				case TB_KEY_F10:
+				case TB_KEY_F11:
+				case TB_KEY_F12:
+					if(0xFFFF - event.key + 1 == atoi(shutdown_key)) {
+						shutdown = true;
+						run = false;
+					}
+					if(0xFFFF - event.key + 1 == atoi(restart_key)) {
+						reboot = true;
+						run = false;
+					}
+					break;
+				case TB_KEY_CTRL_C:
 					run = false;
-				}
-				if( 0xFFFF - event.key + 1 == atoi(restart_key) )
-				{
-					reboot = true;
-					run = false;
-				}
-				break;
-			case TB_KEY_CTRL_C:
-				run = false;
-				break;
-			case TB_KEY_CTRL_U:
-				if (active_input > 0)
-				{
-					input_text_clear(input_structs[active_input]);
-					update = true;
-				}
-				break;
-			case TB_KEY_CTRL_K:
-			case TB_KEY_ARROW_UP:
-				if (active_input > 0)
-				{
-					--active_input;
-					update = true;
-				}
-				break;
-			case TB_KEY_CTRL_J:
-			case TB_KEY_ARROW_DOWN:
-				if (active_input < 2)
-				{
+					break;
+				case TB_KEY_CTRL_U:
+					if(active_input > 0) {
+						input_text_clear(input_structs[active_input]);
+						update = true;
+					}
+					break;
+				case TB_KEY_CTRL_K:
+				case TB_KEY_ARROW_UP:
+					if(active_input > 0) {
+						--active_input;
+						update = true;
+					}
+					break;
+				case TB_KEY_CTRL_J:
+				case TB_KEY_ARROW_DOWN:
+					if(active_input < 2) {
+						++active_input;
+						update = true;
+					}
+					break;
+				case TB_KEY_TAB:
 					++active_input;
+
+					if(active_input > 2) {
+						active_input = SESSION_SWITCH;
+					}
 					update = true;
-				}
-				break;
-			case TB_KEY_TAB:
-				++active_input;
+					break;
+				case TB_KEY_ENTER:
+					save(&desktop, &login);
+					auth(&desktop, &login, &password, &buf);
+					update = true;
 
-				if (active_input > 2)
-				{
-					active_input = SESSION_SWITCH;
-				}
-				update = true;
-				break;
-			case TB_KEY_ENTER:
-				save(&desktop, &login);
-				auth(&desktop, &login, &password, &buf);
-				update = true;
+					if(dgn_catch()) {
+						++auth_fails;
+						// move focus back to password input
+						active_input = PASSWORD_INPUT;
 
-				if (dgn_catch())
-				{
-					++auth_fails;
-					// move focus back to password input
-					active_input = PASSWORD_INPUT;
+						if(dgn_output_code() != DGN_PAM) {
+							buf.info_line = dgn_output_log();
+						}
 
-					if (dgn_output_code() != DGN_PAM)
-					{
-						buf.info_line = dgn_output_log();
+						if(config.blank_password) {
+							input_text_clear(&password);
+						}
+
+						dgn_reset();
+					} else {
+						buf.info_line = lang.logout;
 					}
 
-					if (config.blank_password)
-					{
-						input_text_clear(&password);
-					}
-
-					dgn_reset();
-				}
-				else
-				{
-					buf.info_line = lang.logout;
-				}
-
-				load(&desktop, &login);
-				system("tput cnorm");
-				break;
-			default:
-				(*input_handles[active_input])(
-					input_structs[active_input],
-					&event);
-				update = true;
-				break;
+					load(&desktop, &login);
+					system("tput cnorm");
+					break;
+				default:
+					(*input_handles[active_input])(input_structs[active_input],
+					                               &event);
+					update = true;
+					break;
 			}
 		}
 	}
@@ -373,12 +336,9 @@ int main(int argc, char** argv)
 	draw_free(&buf);
 	lang_free();
 
-	if (shutdown)
-	{
+	if(shutdown) {
 		execl("/bin/sh", "sh", "-c", config.shutdown_cmd, NULL);
-	}
-    else if (reboot)
-	{
+	} else if(reboot) {
 		execl("/bin/sh", "sh", "-c", config.restart_cmd, NULL);
 	}
 

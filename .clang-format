@@ -1,0 +1,13 @@
+BasedOnStyle: LLVM
+
+SpaceBeforeParens: Custom
+SpaceBeforeParensOptions:
+  AfterControlStatements: false
+  AfterFunctionDefinitionName: false
+
+IndentWidth: 4
+TabWidth: 4
+
+AllowShortIfStatementsOnASingleLine: false
+IndentCaseLabels: true
+UseTab: AlignWithSpaces

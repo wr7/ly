@@ -5,78 +5,62 @@
 #include <stdbool.h>
 #include <stddef.h>
 #include <stdint.h>
+#include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-#include <stdio.h>
 #include <unistd.h>
 
 #ifndef DEBUG
-	#define INI_LANG DATADIR "/lang/%s.ini"
-	#define INI_CONFIG "/etc/ly/config.ini"
+#define INI_LANG DATADIR "/lang/%s.ini"
+#define INI_CONFIG "/etc/ly/config.ini"
 #else
-	#define INI_LANG "../res/lang/%s.ini"
-	#define INI_CONFIG "../res/config.ini"
+#define INI_LANG "../res/lang/%s.ini"
+#define INI_CONFIG "../res/config.ini"
 #endif
 
-static void lang_handle(void* data, char** pars, const int pars_count)
-{
-	if (*((char**)data) != NULL)
-	{
-		free (*((char**)data));
+static void lang_handle(void *data, char **pars, const int pars_count) {
+	if(*((char **)data) != NULL) {
+		free(*((char **)data));
 	}
 
-	*((char**)data) = strdup(*pars);
+	*((char **)data) = strdup(*pars);
 }
 
-static void config_handle_u8(void* data, char** pars, const int pars_count)
-{
-	if (strcmp(*pars, "") == 0)
-	{
-		*((uint8_t*)data) = 0;
-	}
-	else
-	{
-		*((uint8_t*)data) = atoi(*pars);
+static void config_handle_u8(void *data, char **pars, const int pars_count) {
+	if(strcmp(*pars, "") == 0) {
+		*((uint8_t *)data) = 0;
+	} else {
+		*((uint8_t *)data) = atoi(*pars);
 	}
 }
 
-static void config_handle_u16(void* data, char** pars, const int pars_count)
-{
-	if (strcmp(*pars, "") == 0)
-	{
-		*((uint16_t*)data) = 0;
-	}
-	else
-	{
-		*((uint16_t*)data) = atoi(*pars);
+static void config_handle_u16(void *data, char **pars, const int pars_count) {
+	if(strcmp(*pars, "") == 0) {
+		*((uint16_t *)data) = 0;
+	} else {
+		*((uint16_t *)data) = atoi(*pars);
 	}
 }
 
-void config_handle_str(void* data, char** pars, const int pars_count)
-{
-	if (*((char**)data) != NULL)
-	{
-		free(*((char**)data));
+void config_handle_str(void *data, char **pars, const int pars_count) {
+	if(*((char **)data) != NULL) {
+		free(*((char **)data));
 	}
 
-	*((char**)data) = strdup(*pars);
+	*((char **)data) = strdup(*pars);
 }
 
-static void config_handle_char(void* data, char** pars, const int pars_count)
-{
-	*((char*)data) = **pars;
+static void config_handle_char(void *data, char **pars, const int pars_count) {
+	*((char *)data) = **pars;
 }
 
-static void config_handle_bool(void* data, char** pars, const int pars_count)
-{
-	*((bool*)data) = (strcmp("true", *pars) == 0);
+static void config_handle_bool(void *data, char **pars, const int pars_count) {
+	*((bool *)data) = (strcmp("true", *pars) == 0);
 }
 
-void lang_load()
-{
+void lang_load() {
 	// must be alphabetically sorted
-	struct configator_param map_no_section[] =
-	{
+	struct configator_param map_no_section[] = {
 		{"capslock", &lang.capslock, lang_handle},
 		{"err_alloc", &lang.err_alloc, lang_handle},
 		{"err_bounds", &lang.err_bounds, lang_handle},
@@ -91,12 +75,14 @@ void lang_load()
 		{"err_pam_abort", &lang.err_pam_abort, lang_handle},
 		{"err_pam_acct_expired", &lang.err_pam_acct_expired, lang_handle},
 		{"err_pam_auth", &lang.err_pam_auth, lang_handle},
-		{"err_pam_authinfo_unavail", &lang.err_pam_authinfo_unavail, lang_handle},
+		{"err_pam_authinfo_unavail", &lang.err_pam_authinfo_unavail,
+	     lang_handle},
 		{"err_pam_authok_reqd", &lang.err_pam_authok_reqd, lang_handle},
 		{"err_pam_buf", &lang.err_pam_buf, lang_handle},
 		{"err_pam_cred_err", &lang.err_pam_cred_err, lang_handle},
 		{"err_pam_cred_expired", &lang.err_pam_cred_expired, lang_handle},
-		{"err_pam_cred_insufficient", &lang.err_pam_cred_insufficient, lang_handle},
+		{"err_pam_cred_insufficient", &lang.err_pam_cred_insufficient,
+	     lang_handle},
 		{"err_pam_cred_unavail", &lang.err_pam_cred_unavail, lang_handle},
 		{"err_pam_maxtries", &lang.err_pam_maxtries, lang_handle},
 		{"err_pam_perm_denied", &lang.err_pam_perm_denied, lang_handle},
@@ -125,13 +111,12 @@ void lang_load()
 	};
 
 	uint16_t map_len[] = {45};
-	struct configator_param* map[] =
-	{
+	struct configator_param *map[] = {
 		map_no_section,
 	};
 
 	uint16_t sections_len = 0;
-	struct configator_param* sections = NULL;
+	struct configator_param *sections = NULL;
 
 	struct configator lang;
 	lang.map = map;
@@ -142,21 +127,17 @@ void lang_load()
 	char file[256];
 	snprintf(file, 256, INI_LANG, config.lang);
 
-	if (access(file, F_OK) != -1)
-	{
+	if(access(file, F_OK) != -1) {
 		configator(&lang, file);
 	}
 }
 
-void config_load(const char *cfg_path)
-{
-	if (cfg_path == NULL)
-	{
+void config_load(const char *cfg_path) {
+	if(cfg_path == NULL) {
 		cfg_path = INI_CONFIG;
 	}
 	// must be alphabetically sorted
-	struct configator_param map_no_section[] =
-	{
+	struct configator_param map_no_section[] = {
 		{"animate", &config.animate, config_handle_bool},
 		{"animation", &config.animation, config_handle_u8},
 		{"asterisk", &config.asterisk, config_handle_char},
@@ -201,13 +182,12 @@ void config_load(const char *cfg_path)
 	};
 
 	uint16_t map_len[] = {41};
-	struct configator_param* map[] =
-	{
+	struct configator_param *map[] = {
 		map_no_section,
 	};
 
 	uint16_t sections_len = 0;
-	struct configator_param* sections = NULL;
+	struct configator_param *sections = NULL;
 
 	struct configator config;
 	config.map = map;
@@ -215,11 +195,10 @@ void config_load(const char *cfg_path)
 	config.sections = sections;
 	config.sections_len = sections_len;
 
-	configator(&config, (char *) cfg_path);
+	configator(&config, (char *)cfg_path);
 }
 
-void lang_defaults()
-{
+void lang_defaults() {
 	lang.capslock = strdup("capslock");
 	lang.err_alloc = strdup("failed memory allocation");
 	lang.err_bounds = strdup("out-of-bounds index");
@@ -267,8 +246,7 @@ void lang_defaults()
 	lang.xinitrc = strdup("xinitrc");
 }
 
-void config_defaults()
-{
+void config_defaults() {
 	config.animate = false;
 	config.animation = 0;
 	config.asterisk = '*';
@@ -292,7 +270,8 @@ void config_defaults()
 	config.max_password_len = 255;
 	config.mcookie_cmd = strdup("/usr/bin/mcookie");
 	config.min_refresh_delta = 5;
-	config.path = strdup("/sbin:/bin:/usr/local/sbin:/usr/local/bin:/usr/bin:/usr/sbin");
+	config.path =
+		strdup("/sbin:/bin:/usr/local/sbin:/usr/local/bin:/usr/bin:/usr/sbin");
 	config.restart_cmd = strdup("/sbin/shutdown -r now");
 	config.restart_key = strdup("F2");
 	config.save = true;
@@ -312,8 +291,7 @@ void config_defaults()
 	config.xsessions = strdup("/usr/share/xsessions");
 }
 
-void lang_free()
-{
+void lang_free() {
 	free(lang.capslock);
 	free(lang.err_alloc);
 	free(lang.err_bounds);
@@ -361,8 +339,7 @@ void lang_free()
 	free(lang.xinitrc);
 }
 
-void config_free()
-{
+void config_free() {
 	free(config.clock);
 	free(config.console_dev);
 	free(config.lang);

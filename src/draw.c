@@ -2,11 +2,11 @@
 #include "termbox.h"
 
 #include "animations.h"
-#include "inputs.h"
-#include "utils.h"
+#include "bigclock.h"
 #include "config.h"
 #include "draw.h"
-#include "bigclock.h"
+#include "inputs.h"
+#include "utils.h"
 
 #include <ctype.h>
 #include <fcntl.h>
@@ -17,17 +17,16 @@
 #include <sys/ioctl.h>
 #include <sys/stat.h>
 #include <sys/time.h>
-#include <unistd.h>
 #include <time.h>
+#include <unistd.h>
 
 #if defined(__DragonFly__) || defined(__FreeBSD__)
-	#include <sys/kbio.h>
+#include <sys/kbio.h>
 #else // linux
-	#include <linux/kd.h>
+#include <linux/kd.h>
 #endif
 
-void draw_init(struct term_buf* buf)
-{
+void draw_init(struct term_buf *buf) {
 	buf->width = tb_width();
 	buf->height = tb_height();
 	hostname(&buf->info_line);
@@ -35,20 +34,15 @@ void draw_init(struct term_buf* buf)
 	uint16_t len_login = strlen(lang.login);
 	uint16_t len_password = strlen(lang.password);
 
-	if (len_login > len_password)
-	{
+	if(len_login > len_password) {
 		buf->labels_max_len = len_login;
-	}
-	else
-	{
+	} else {
 		buf->labels_max_len = len_password;
 	}
 
 	buf->box_height = 7 + (2 * config.margin_box_v);
-	buf->box_width =
-		(2 * config.margin_box_h)
-		+ (config.input_len + 1)
-		+ buf->labels_max_len;
+	buf->box_width = (2 * config.margin_box_h) + (config.input_len + 1) +
+	                 buf->labels_max_len;
 
 #if defined(__linux__) || defined(__FreeBSD__)
 	buf->box_chars.left_up = 0x250c;
@@ -63,7 +57,7 @@ void draw_init(struct term_buf* buf)
 	buf->box_chars.left_up = '+';
 	buf->box_chars.left_down = '+';
 	buf->box_chars.right_up = '+';
-	buf->box_chars.right_down= '+';
+	buf->box_chars.right_down = '+';
 	buf->box_chars.top = '-';
 	buf->box_chars.bot = '-';
 	buf->box_chars.left = '|';
@@ -71,16 +65,13 @@ void draw_init(struct term_buf* buf)
 #endif
 }
 
-void draw_free(struct term_buf* buf)
-{
-	if (config.animate)
-	{
+void draw_free(struct term_buf *buf) {
+	if(config.animate) {
 		animation_free(buf);
 	}
 }
 
-void draw_box(struct term_buf* buf)
-{
+void draw_box(struct term_buf *buf) {
 	uint16_t box_x = (buf->width - buf->box_width) / 2;
 	uint16_t box_y = (buf->height - buf->box_height) / 2;
 	uint16_t box_x2 = (buf->width + buf->box_width) / 2;
@@ -88,118 +79,76 @@ void draw_box(struct term_buf* buf)
 	buf->box_x = box_x;
 	buf->box_y = box_y;
 
-	if (!config.hide_borders)
-	{
+	if(!config.hide_borders) {
 		// corners
-		tb_change_cell(
-			box_x - 1,
-			box_y - 1,
-			buf->box_chars.left_up,
-			config.fg,
-			config.bg);
-		tb_change_cell(
-			box_x2,
-			box_y - 1,
-			buf->box_chars.right_up,
-			config.fg,
-			config.bg);
-		tb_change_cell(
-			box_x - 1,
-			box_y2,
-			buf->box_chars.left_down,
-			config.fg,
-			config.bg);
-		tb_change_cell(
-			box_x2,
-			box_y2,
-			buf->box_chars.right_down,
-			config.fg,
-			config.bg);
+		tb_change_cell(box_x - 1, box_y - 1, buf->box_chars.left_up, config.fg,
+		               config.bg);
+		tb_change_cell(box_x2, box_y - 1, buf->box_chars.right_up, config.fg,
+		               config.bg);
+		tb_change_cell(box_x - 1, box_y2, buf->box_chars.left_down, config.fg,
+		               config.bg);
+		tb_change_cell(box_x2, box_y2, buf->box_chars.right_down, config.fg,
+		               config.bg);
 
 		// top and bottom
 		struct tb_cell c1 = {buf->box_chars.top, config.fg, config.bg};
 		struct tb_cell c2 = {buf->box_chars.bot, config.fg, config.bg};
 
-		for (uint16_t i = 0; i < buf->box_width; ++i)
-		{
-			tb_put_cell(
-				box_x + i,
-				box_y - 1,
-				&c1);
-			tb_put_cell(
-				box_x + i,
-				box_y2,
-				&c2);
+		for(uint16_t i = 0; i < buf->box_width; ++i) {
+			tb_put_cell(box_x + i, box_y - 1, &c1);
+			tb_put_cell(box_x + i, box_y2, &c2);
 		}
 
 		// left and right
 		c1.ch = buf->box_chars.left;
 		c2.ch = buf->box_chars.right;
 
-		for (uint16_t i = 0; i < buf->box_height; ++i)
-		{
-			tb_put_cell(
-				box_x - 1,
-				box_y + i,
-				&c1);
+		for(uint16_t i = 0; i < buf->box_height; ++i) {
+			tb_put_cell(box_x - 1, box_y + i, &c1);
 
-			tb_put_cell(
-				box_x2,
-				box_y + i,
-				&c2);
+			tb_put_cell(box_x2, box_y + i, &c2);
 		}
 	}
 
-	if (config.blank_box)
-	{
+	if(config.blank_box) {
 		struct tb_cell blank = {' ', config.fg, config.bg};
 
-		for (uint16_t i = 0; i < buf->box_height; ++i)
-		{
-			for (uint16_t k = 0; k < buf->box_width; ++k)
-			{
-				tb_put_cell(
-					box_x + k,
-					box_y + i,
-					&blank);
+		for(uint16_t i = 0; i < buf->box_height; ++i) {
+			for(uint16_t k = 0; k < buf->box_width; ++k) {
+				tb_put_cell(box_x + k, box_y + i, &blank);
 			}
 		}
 	}
 }
 
-char* time_str(char* fmt, int maxlen)
-{
+char *time_str(char *fmt, int maxlen) {
 	time_t timer;
-	char* buffer = malloc(maxlen);
-	struct tm* tm_info;
+	char *buffer = malloc(maxlen);
+	struct tm *tm_info;
 
 	timer = time(NULL);
 	tm_info = localtime(&timer);
 
-	if (strftime(buffer, maxlen, fmt, tm_info) == 0)
-    {
-        buffer[0] = '\0';
-    }
+	if(strftime(buffer, maxlen, fmt, tm_info) == 0) {
+		buffer[0] = '\0';
+	}
 
 	return buffer;
 }
 
-extern inline uint32_t* CLOCK_N(char c);
+extern inline uint32_t *CLOCK_N(char c);
 
-struct tb_cell* clock_cell(char c)
-{
-	struct tb_cell* cells = malloc(sizeof(struct tb_cell) * CLOCK_W * CLOCK_H);
+struct tb_cell *clock_cell(char c) {
+	struct tb_cell *cells = malloc(sizeof(struct tb_cell) * CLOCK_W * CLOCK_H);
 
 	struct timeval tv;
 	gettimeofday(&tv, NULL);
-	if (config.animate && c == ':' && tv.tv_usec / 500000)
-    {
-        c = ' ';
-    }
-	uint32_t* clockchars = CLOCK_N(c);
+	if(config.animate && c == ':' && tv.tv_usec / 500000) {
+		c = ' ';
+	}
+	uint32_t *clockchars = CLOCK_N(c);
 
-	for (int i = 0; i < CLOCK_W * CLOCK_H; i++)
-	{
+	for(int i = 0; i < CLOCK_W * CLOCK_H; i++) {
 		cells[i].ch = clockchars[i];
 		cells[i].fg = config.fg;
 		cells[i].bg = config.bg;
@@ -208,74 +157,65 @@ struct tb_cell* clock_cell(char c)
 	return cells;
 }
 
-void alpha_blit(struct tb_cell* buf, uint16_t x, uint16_t y, uint16_t w, uint16_t h, struct tb_cell* cells)
-{
-	if (x + w >= tb_width() || y + h >= tb_height())
+void alpha_blit(struct tb_cell *buf, uint16_t x, uint16_t y, uint16_t w,
+                uint16_t h, struct tb_cell *cells) {
+	if(x + w >= tb_width() || y + h >= tb_height())
 		return;
 
-	for (int i = 0; i < h; i++)
-	{
-		for (int j = 0; j < w; j++)
-		{
+	for(int i = 0; i < h; i++) {
+		for(int j = 0; j < w; j++) {
 			struct tb_cell cell = cells[i * w + j];
-			if (cell.ch)
-            {
-                buf[(y + i) * tb_width() + (x + j)] = cell;
-            }
+			if(cell.ch) {
+				buf[(y + i) * tb_width() + (x + j)] = cell;
+			}
 		}
 	}
 }
 
-void draw_bigclock(struct term_buf* buf)
-{
-	if (!config.bigclock)
-    {
-        return;
-    }
+void draw_bigclock(struct term_buf *buf) {
+	if(!config.bigclock) {
+		return;
+	}
 
 	int xo = buf->width / 2 - (5 * (CLOCK_W + 1)) / 2;
 	int yo = (buf->height - buf->box_height) / 2 - CLOCK_H - 2;
 
-	char* clockstr = time_str("%H:%M", 6);
-	struct tb_cell* clockcell;
+	char *clockstr = time_str("%H:%M", 6);
+	struct tb_cell *clockcell;
 
-	for (int i = 0; i < 5; i++)
-	{
+	for(int i = 0; i < 5; i++) {
 		clockcell = clock_cell(clockstr[i]);
-		alpha_blit(tb_cell_buffer(), xo + i * (CLOCK_W + 1), yo, CLOCK_W, CLOCK_H, clockcell);
+		alpha_blit(tb_cell_buffer(), xo + i * (CLOCK_W + 1), yo, CLOCK_W,
+		           CLOCK_H, clockcell);
 		free(clockcell);
 	}
 
 	free(clockstr);
 }
 
-void draw_clock(struct term_buf* buf)
-{
-	if (config.clock == NULL || strlen(config.clock) == 0)
-    {
-        return;
-    }
+void draw_clock(struct term_buf *buf) {
+	if(config.clock == NULL || strlen(config.clock) == 0) {
+		return;
+	}
 
-	char* clockstr = time_str(config.clock, 32);
+	char *clockstr = time_str(config.clock, 32);
 	int clockstrlen = strlen(clockstr);
 
-	struct tb_cell* cells = strn_cell(clockstr, clockstrlen);
+	struct tb_cell *cells = strn_cell(clockstr, clockstrlen);
 	tb_blit(buf->width - clockstrlen, 0, clockstrlen, 1, cells);
 
 	free(clockstr);
 	free(cells);
 }
 
-struct tb_cell* strn_cell(char* s, uint16_t len) // throws
+struct tb_cell *strn_cell(char *s, uint16_t len) // throws
 {
-	struct tb_cell* cells = malloc_or_throw((sizeof (struct tb_cell)) * len);
-	char* s2 = s;
+	struct tb_cell *cells = malloc_or_throw((sizeof(struct tb_cell)) * len);
+	char *s2 = s;
 	uint32_t c;
 
-	for (uint16_t i = 0; i < len; ++i)
-	{
-		if ((s2 - s) >= len)
-		{
+	for(uint16_t i = 0; i < len; ++i) {
+		if((s2 - s) >= len) {
 			break;
 		}
 
@@ -289,129 +229,94 @@ struct tb_cell* strn_cell(char* s, uint16_t len) // throws
 	return cells;
 }
 
-struct tb_cell* str_cell(char* s) // throws
+struct tb_cell *str_cell(char *s) // throws
 {
 	return strn_cell(s, strlen(s));
 }
 
-void draw_labels(struct term_buf* buf) // throws
+void draw_labels(struct term_buf *buf) // throws
 {
 	// login text
-	struct tb_cell* login = str_cell(lang.login);
+	struct tb_cell *login = str_cell(lang.login);
 
-	if (dgn_catch())
-	{
+	if(dgn_catch()) {
 		dgn_reset();
-	}
-	else
-	{
-		tb_blit(
-			buf->box_x + config.margin_box_h,
-			buf->box_y + config.margin_box_v + 4,
-			strlen(lang.login),
-			1,
-			login);
+	} else {
+		tb_blit(buf->box_x + config.margin_box_h,
+		        buf->box_y + config.margin_box_v + 4, strlen(lang.login), 1,
+		        login);
 		free(login);
 	}
 
 	// password text
-	struct tb_cell* password = str_cell(lang.password);
+	struct tb_cell *password = str_cell(lang.password);
 
-	if (dgn_catch())
-	{
+	if(dgn_catch()) {
 		dgn_reset();
-	}
-	else
-	{
-		tb_blit(
-			buf->box_x + config.margin_box_h,
-			buf->box_y + config.margin_box_v + 6,
-			strlen(lang.password),
-			1,
-			password);
+	} else {
+		tb_blit(buf->box_x + config.margin_box_h,
+		        buf->box_y + config.margin_box_v + 6, strlen(lang.password), 1,
+		        password);
 		free(password);
 	}
 
-	if (buf->info_line != NULL)
-	{
+	if(buf->info_line != NULL) {
 		uint16_t len = strlen(buf->info_line);
-		struct tb_cell* info_cell = str_cell(buf->info_line);
+		struct tb_cell *info_cell = str_cell(buf->info_line);
 
-		if (dgn_catch())
-		{
+		if(dgn_catch()) {
 			dgn_reset();
-		}
-		else
-		{
-			tb_blit(
-				buf->box_x + ((buf->box_width - len) / 2),
-				buf->box_y + config.margin_box_v,
-				len,
-				1,
-				info_cell);
+		} else {
+			tb_blit(buf->box_x + ((buf->box_width - len) / 2),
+			        buf->box_y + config.margin_box_v, len, 1, info_cell);
 			free(info_cell);
 		}
 	}
 }
 
-void draw_key_hints()
-{
-	struct tb_cell* shutdown_key = str_cell(config.shutdown_key);
+void draw_key_hints() {
+	struct tb_cell *shutdown_key = str_cell(config.shutdown_key);
 	int len = strlen(config.shutdown_key);
-	if (dgn_catch())
-	{
+	if(dgn_catch()) {
 		dgn_reset();
-	}
-	else
-	{
+	} else {
 		tb_blit(0, 0, len, 1, shutdown_key);
 		free(shutdown_key);
 	}
 
-	struct tb_cell* shutdown = str_cell(lang.shutdown);
+	struct tb_cell *shutdown = str_cell(lang.shutdown);
 	len += 1;
-	if (dgn_catch())
-	{
+	if(dgn_catch()) {
 		dgn_reset();
-	}
-	else
-	{
+	} else {
 		tb_blit(len, 0, strlen(lang.shutdown), 1, shutdown);
 		free(shutdown);
 	}
 
-	struct tb_cell* restart_key = str_cell(config.restart_key);
+	struct tb_cell *restart_key = str_cell(config.restart_key);
 	len += strlen(lang.shutdown) + 1;
-	if (dgn_catch())
-	{
+	if(dgn_catch()) {
 		dgn_reset();
-	}
-	else
-	{
+	} else {
 		tb_blit(len, 0, strlen(config.restart_key), 1, restart_key);
 		free(restart_key);
 	}
 
-	struct tb_cell* restart = str_cell(lang.restart);
+	struct tb_cell *restart = str_cell(lang.restart);
 	len += strlen(config.restart_key) + 1;
-	if (dgn_catch())
-	{
+	if(dgn_catch()) {
 		dgn_reset();
-	}
-	else
-	{
+	} else {
 		tb_blit(len, 0, strlen(lang.restart), 1, restart);
 		free(restart);
 	}
 }
 
-void draw_lock_state(struct term_buf* buf)
-{
+void draw_lock_state(struct term_buf *buf) {
 	// get values
 	int fd = open(config.console_dev, O_RDONLY);
 
-	if (fd < 0)
-	{
+	if(fd < 0) {
 		buf->info_line = lang.err_console_dev;
 		return;
 	}
@@ -436,21 +341,16 @@ void draw_lock_state(struct term_buf* buf)
 	// print text
 	uint16_t pos_x = buf->width - strlen(lang.numlock);
 	uint16_t pos_y = 1;
-	if (config.clock == NULL || strlen(config.clock) == 0)
-	{
+	if(config.clock == NULL || strlen(config.clock) == 0) {
 		pos_y = 0;
 	}
 
-	if (numlock_on)
-	{
-		struct tb_cell* numlock = str_cell(lang.numlock);
+	if(numlock_on) {
+		struct tb_cell *numlock = str_cell(lang.numlock);
 
-		if (dgn_catch())
-		{
+		if(dgn_catch()) {
 			dgn_reset();
-		}
-		else
-		{
+		} else {
 			tb_blit(pos_x, pos_y, strlen(lang.numlock), 1, numlock);
 			free(numlock);
 		}
@@ -458,132 +358,87 @@ void draw_lock_state(struct term_buf* buf)
 
 	pos_x -= strlen(lang.capslock) + 1;
 
-	if (capslock_on)
-	{
-		struct tb_cell* capslock = str_cell(lang.capslock);
+	if(capslock_on) {
+		struct tb_cell *capslock = str_cell(lang.capslock);
 
-		if (dgn_catch())
-		{
+		if(dgn_catch()) {
 			dgn_reset();
-		}
-		else
-		{
+		} else {
 			tb_blit(pos_x, pos_y, strlen(lang.capslock), 1, capslock);
 			free(capslock);
 		}
 	}
 }
 
-void draw_desktop(struct desktop* target)
-{
+void draw_desktop(struct desktop *target) {
 	uint16_t len = strlen(target->list[target->cur]);
 
-	if (len > (target->visible_len - 3))
-	{
+	if(len > (target->visible_len - 3)) {
 		len = target->visible_len - 3;
 	}
 
-	tb_change_cell(
-		target->x,
-		target->y,
-		'<',
-		config.fg,
-		config.bg);
+	tb_change_cell(target->x, target->y, '<', config.fg, config.bg);
 
-	tb_change_cell(
-		target->x + target->visible_len - 1,
-		target->y,
-		'>',
-		config.fg,
-		config.bg);
+	tb_change_cell(target->x + target->visible_len - 1, target->y, '>',
+	               config.fg, config.bg);
 
-	for (uint16_t i = 0; i < len; ++ i)
-	{
-		tb_change_cell(
-			target->x + i + 2,
-			target->y,
-			target->list[target->cur][i],
-			config.fg,
-			config.bg);
+	for(uint16_t i = 0; i < len; ++i) {
+		tb_change_cell(target->x + i + 2, target->y,
+		               target->list[target->cur][i], config.fg, config.bg);
 	}
 }
 
-void draw_input(struct text* input)
-{
+void draw_input(struct text *input) {
 	uint16_t len = strlen(input->text);
 	uint16_t visible_len = input->visible_len;
 
-	if (len > visible_len)
-	{
+	if(len > visible_len) {
 		len = visible_len;
 	}
 
-	struct tb_cell* cells = strn_cell(input->visible_start, len);
+	struct tb_cell *cells = strn_cell(input->visible_start, len);
 
-	if (dgn_catch())
-	{
+	if(dgn_catch()) {
 		dgn_reset();
-	}
-	else
-	{
+	} else {
 		tb_blit(input->x, input->y, len, 1, cells);
 		free(cells);
 
 		struct tb_cell c1 = {' ', config.fg, config.bg};
 
-		for (uint16_t i = input->end - input->visible_start; i < visible_len; ++i)
-		{
-			tb_put_cell(
-				input->x + i,
-				input->y,
-				&c1);
+		for(uint16_t i = input->end - input->visible_start; i < visible_len;
+		    ++i) {
+			tb_put_cell(input->x + i, input->y, &c1);
 		}
 	}
 }
 
-void draw_input_mask(struct text* input)
-{
+void draw_input_mask(struct text *input) {
 	uint16_t len = strlen(input->text);
 	uint16_t visible_len = input->visible_len;
 
-	if (len > visible_len)
-	{
+	if(len > visible_len) {
 		len = visible_len;
 	}
 
 	struct tb_cell c1 = {config.asterisk, config.fg, config.bg};
 	struct tb_cell c2 = {' ', config.fg, config.bg};
 
-	for (uint16_t i = 0; i < visible_len; ++i)
-	{
-		if (input->visible_start + i < input->end)
-		{
-			tb_put_cell(
-				input->x + i,
-				input->y,
-				&c1);
-		}
-		else
-		{
-			tb_put_cell(
-				input->x + i,
-				input->y,
-				&c2);
+	for(uint16_t i = 0; i < visible_len; ++i) {
+		if(input->visible_start + i < input->end) {
+			tb_put_cell(input->x + i, input->y, &c1);
+		} else {
+			tb_put_cell(input->x + i, input->y, &c2);
 		}
 	}
 }
 
-void position_input(
-	struct term_buf* buf,
-	struct desktop* desktop,
-	struct text* login,
-	struct text* password)
-{
+void position_input(struct term_buf *buf, struct desktop *desktop,
+                    struct text *login, struct text *password) {
 	uint16_t x = buf->box_x + config.margin_box_h + buf->labels_max_len + 1;
 	int32_t len = buf->box_x + buf->box_width - config.margin_box_h - x;
 
-	if (len < 0)
-	{
+	if(len < 0) {
 		return;
 	}
 
@@ -600,41 +455,34 @@ void position_input(
 	password->visible_len = len;
 }
 
-bool cascade(struct term_buf* term_buf, uint8_t* fails)
-{
+bool cascade(struct term_buf *term_buf, uint8_t *fails) {
 	uint16_t width = term_buf->width;
 	uint16_t height = term_buf->height;
 
-	struct tb_cell* buf = tb_cell_buffer();
+	struct tb_cell *buf = tb_cell_buffer();
 	bool changes = false;
 	char c_under;
 	char c;
 
-	for (int i = height - 2; i >= 0; --i)
-	{
-		for (int k = 0; k < width; ++k)
-		{
+	for(int i = height - 2; i >= 0; --i) {
+		for(int k = 0; k < width; ++k) {
 			c = buf[i * width + k].ch;
 
-			if (isspace(c))
-			{
+			if(isspace(c)) {
 				continue;
 			}
 
 			c_under = buf[(i + 1) * width + k].ch;
 
-			if (!isspace(c_under))
-			{
+			if(!isspace(c_under)) {
 				continue;
 			}
 
-			if (!changes)
-			{
+			if(!changes) {
 				changes = true;
 			}
 
-			if ((rand() % 10) > 7)
-			{
+			if((rand() % 10) > 7) {
 				continue;
 			}
 
@@ -644,8 +492,7 @@ bool cascade(struct term_buf* term_buf, uint8_t* fails)
 	}
 
 	// stop force-updating
-	if (!changes)
-	{
+	if(!changes) {
 		sleep(7);
 		*fails = 0;
 
