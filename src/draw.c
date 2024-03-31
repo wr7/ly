@@ -268,29 +268,22 @@ void draw_clock(struct term_buf* buf)
 
 struct tb_cell* strn_cell(char* s, uint16_t len) // throws
 {
-	struct tb_cell* cells = malloc((sizeof (struct tb_cell)) * len);
+	struct tb_cell* cells = malloc_or_throw((sizeof (struct tb_cell)) * len);
 	char* s2 = s;
 	uint32_t c;
 
-	if (cells != NULL)
+	for (uint16_t i = 0; i < len; ++i)
 	{
-		for (uint16_t i = 0; i < len; ++i)
+		if ((s2 - s) >= len)
 		{
-			if ((s2 - s) >= len)
-			{
-				break;
-			}
-
-			s2 += utf8_char_to_unicode(&c, s2);
-
-			cells[i].ch = c;
-			cells[i].bg = config.bg;
-			cells[i].fg = config.fg;
+			break;
 		}
-	}
-	else
-	{
-		dgn_throw(DGN_ALLOC);
+
+		s2 += utf8_char_to_unicode(&c, s2);
+
+		cells[i].ch = c;
+		cells[i].bg = config.bg;
+		cells[i].fg = config.fg;
 	}
 
 	return cells;

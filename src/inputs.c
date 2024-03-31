@@ -2,6 +2,7 @@
 #include "termbox.h"
 #include "inputs.h"
 #include "config.h"
+#include "utils.h"
 
 #include <stdint.h>
 #include <stdlib.h>
@@ -92,25 +93,18 @@ void input_desktop(struct desktop* target)
 
 void input_text(struct text* target, uint64_t len)
 {
-	target->text = malloc(len + 1);
+	target->text = malloc_or_throw(len + 1);
+	
+	int ok = mlock(target->text, len + 1);
 
-	if (target->text == NULL)
+	if (ok < 0)
 	{
-		dgn_throw(DGN_ALLOC);
+		dgn_throw(DGN_MLOCK);
 		return;
 	}
-	else
-	{
-		int ok = mlock(target->text, len + 1);
 
-		if (ok < 0)
-		{
-			dgn_throw(DGN_MLOCK);
-			return;
-		}
-
-		memset(target->text, 0, len + 1);
-	}
+	memset(target->text, 0, len + 1);
+	
 
 	target->cur = target->text;
 	target->end = target->text;
@@ -177,21 +171,13 @@ void input_desktop_add(
 	enum display_server display_server)
 {
 	++(target->len);
-	target->list = realloc(target->list, target->len * (sizeof (char*)));
-    target->list_simple = realloc(target->list_simple, target->len * (sizeof (char*)));
-    target->cmd = realloc(target->cmd, target->len * (sizeof (char*)));
-	target->display_server = realloc(
+	target->list = realloc_or_throw(target->list, target->len * (sizeof (char*)));
+    target->list_simple = realloc_or_throw(target->list_simple, target->len * (sizeof (char*)));
+    target->cmd = realloc_or_throw(target->cmd, target->len * (sizeof (char*)));
+	target->display_server = realloc_or_throw(
 		target->display_server,
 		target->len * (sizeof (enum display_server)));
 	target->cur = target->len - 1;
-
-	if ((target->list == NULL)
-		|| (target->cmd == NULL)
-		|| (target->display_server == NULL))
-	{
-		dgn_throw(DGN_ALLOC);
-		return;
-	}
 
     target->list[target->cur] = name;
 

@@ -1,5 +1,6 @@
 #include "configator.h"
 #include "dragonfail.h"
+#include "dragonfail_error.h"
 #include "inputs.h"
 #include "config.h"
 #include "utils.h"
@@ -18,6 +19,30 @@
 #else // linux
 	#include <linux/vt.h>
 #endif
+
+void *malloc_or_throw(size_t size)
+{
+	void *ptr = malloc(size);
+
+	if (ptr == NULL)
+	{
+		dgn_throw(DGN_ALLOC);
+	}
+
+	return ptr;
+}
+
+void *realloc_or_throw(void *old, size_t size)
+{
+	void *new = realloc(old, size);
+
+	if(new == NULL && size != 0)
+	{
+		dgn_throw(DGN_ALLOC);
+	}
+
+	return new;
+}
 
 void desktop_crawl(
 	struct desktop* target,
@@ -162,13 +187,7 @@ void hostname(char** out)
 		maxlen = _POSIX_HOST_NAME_MAX;
 	}
 
-	hostname_backup = malloc(maxlen + 1);
-
-	if (hostname_backup == NULL)
-	{
-		dgn_throw(DGN_ALLOC);
-		return;
-	}
+	hostname_backup = malloc_or_throw(maxlen + 1);
 
 	if (gethostname(hostname_backup, maxlen) < 0)
 	{

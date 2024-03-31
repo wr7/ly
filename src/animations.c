@@ -95,21 +95,11 @@ struct doom_state
 
 static struct doom_state *doom_init(struct term_buf* buf)
 {
-	struct doom_state *state = malloc(sizeof(struct doom_state));
-
-	if (state == NULL)
-	{
-		dgn_throw(DGN_ALLOC);
-	}
+	struct doom_state *state = malloc_or_throw(sizeof(struct doom_state));
 
 	uint16_t tmp_len = buf->width * buf->height;
-	state->buf = malloc(tmp_len);
+	state->buf = malloc_or_throw(tmp_len);
 	tmp_len -= buf->width;
-
-	if (state->buf == NULL)
-	{
-		dgn_throw(DGN_ALLOC);
-	}
 
 	memset(state->buf, 0, tmp_len);
 	memset(state->buf + tmp_len, DOOM_STEPS - 1, buf->width);
@@ -200,59 +190,24 @@ struct matrix_state
 // Adapted from cmatrix
 static struct matrix_state *matrix_init(struct term_buf* buf)
 {
-	struct matrix_state *s = malloc(sizeof(struct matrix_state));
-
-	if (s == NULL)
-	{
-		dgn_throw(DGN_ALLOC);
-	}
+	struct matrix_state *s = malloc_or_throw(sizeof(struct matrix_state));
 
 	uint16_t len = buf->height + 1;
-	s->grid = malloc(sizeof(struct matrix_dot*) * len);
-
-	if (s->grid == NULL)
-	{
-		dgn_throw(DGN_ALLOC);
-	}
+	s->grid = malloc_or_throw(sizeof(struct matrix_dot*) * len);
 
 	len = (buf->height + 1) * buf->width;
-	(s->grid)[0] = malloc(sizeof(struct matrix_dot) * len);
-
-	if ((s->grid)[0] == NULL)
-	{
-		dgn_throw(DGN_ALLOC);
-	}
+	(s->grid)[0] = malloc_or_throw(sizeof(struct matrix_dot) * len);
 
 	for (int i = 1; i <= buf->height; ++i)
 	{
 		s->grid[i] = s->grid[i - 1] + buf->width;
-
-		if (s->grid[i] == NULL)
-		{
-			dgn_throw(DGN_ALLOC);
-		}
 	}
 
-	s->length = malloc(buf->width * sizeof(int));
+	s->length = malloc_or_throw(buf->width * sizeof(int));
 
-	if (s->length == NULL)
-	{
-		dgn_throw(DGN_ALLOC);
-	}
+	s->spaces = malloc_or_throw(buf->width * sizeof(int));
 
-	s->spaces = malloc(buf->width * sizeof(int));
-
-	if (s->spaces == NULL)
-	{
-		dgn_throw(DGN_ALLOC);
-	}
-
-	s->updates = malloc(buf->width * sizeof(int));
-
-	if (s->updates == NULL)
-	{
-		dgn_throw(DGN_ALLOC);
-	}
+	s->updates = malloc_or_throw(buf->width * sizeof(int));
 
 	if(buf->height <= 3)
 	{
