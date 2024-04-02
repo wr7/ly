@@ -21,6 +21,7 @@ Currently Lye has the following animations. The ones unique to lye are denoted w
  - Random - 0 (*)
  - Doom fire - 1
  - Matrix - 2
+ - Blizzard - 3 (*)
 
 ## Dependencies
  - a C99 compiler (tested with tcc and gcc)

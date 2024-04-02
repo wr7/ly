@@ -8,6 +8,7 @@
 #include "termbox.h"
 #include "utils.h"
 
+#include "animations/blizzard.h"
 #include "animations/doom.h"
 #include "animations/matrix.h"
 
@@ -42,6 +43,11 @@ static const struct animation ANIMATIONS[] = {
 		.init = (void *(*)(struct term_buf *buf))matrix_init,
 		.free = (void (*)(void *state))matrix_free,
 		.draw = (void (*)(void *state, struct term_buf *buf))matrix,
+	},
+	{
+		.init = blizzard_init,
+		.free = blizzard_free,
+		.draw = blizzard_draw,
 	},
 };
 
