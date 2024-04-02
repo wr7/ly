@@ -32,6 +32,7 @@ INCL+= -I$(SUBD)/termbox_next/src
 
 SRCS = $(SRCD)/main.c
 SRCS += $(SRCD)/animations.c
+SRCS += $(SRCD)/animations/blizzard.c
 SRCS += $(SRCD)/animations/doom.c
 SRCS += $(SRCD)/animations/matrix.c
 SRCS += $(SRCD)/animations/utils/mtwister.c
