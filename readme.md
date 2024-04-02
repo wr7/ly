@@ -1,6 +1,7 @@
 
 # Lye - a TUI display manager
-![Lye screenshot](https://user-images.githubusercontent.com/5473047/88958888-65efbf80-d2a1-11ea-8ae5-3f263bce9cce.png "Lye screenshot")
+
+![Lye in a TTY with the blizzard animation](https://github.com/wr7/lye/assets/53203261/f25890c2-fc4b-4dab-b1e2-c648a75817f8 "Lye in a TTY with the blizzard animation")
 
 Lye (Ly Extended) is a fork of [Ly](https://github.com/fairyglade/ly), a lightweight TUI (ncurses-like) display manager for Linux and BSD.
 
