@@ -34,6 +34,7 @@ SRCS = $(SRCD)/main.c
 SRCS += $(SRCD)/animations.c
 SRCS += $(SRCD)/animations/doom.c
 SRCS += $(SRCD)/animations/matrix.c
+SRCS += $(SRCD)/animations/utils/mtwister.c
 SRCS += $(SRCD)/config.c
 SRCS += $(SRCD)/draw.c
 SRCS += $(SRCD)/inputs.c
