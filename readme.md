@@ -8,7 +8,7 @@ Lye (Ly Extended) is a fork of [Ly](https://github.com/fairyglade/ly), a lightwe
 ## Fork
 The upstream Ly hasn't been updated recently. Lye was made to add several bug fixes and features.
 
-I don't have enough time to rapidly work on Lye, but the long term plans of Lye are as follows:
+The long term plans of Lye are as follows:
  - Clean up code
    - Break up files
    - Break up functions
