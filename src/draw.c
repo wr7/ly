@@ -139,7 +139,7 @@ char *time_str(char *fmt, int maxlen) {
 extern inline uint32_t *CLOCK_N(char c);
 
 struct tb_cell *clock_cell(char c) {
-	struct tb_cell *cells = malloc(sizeof(struct tb_cell) * CLOCK_W * CLOCK_H);
+	struct tb_cell *cells = malloc(sizeof(*cells) * CLOCK_W * CLOCK_H);
 
 	struct timeval tv;
 	gettimeofday(&tv, NULL);
@@ -210,7 +210,7 @@ void draw_clock(struct term_buf *buf) {
 
 struct tb_cell *strn_cell(char *s, uint16_t len) // throws
 {
-	struct tb_cell *cells = malloc_or_throw((sizeof(struct tb_cell)) * len);
+	struct tb_cell *cells = malloc_or_throw((sizeof(*cells)) * len);
 	char *s2 = s;
 	uint32_t c;
 

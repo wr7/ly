@@ -16,23 +16,23 @@ struct matrix_state {
 
 // Adapted from cmatrix
 struct matrix_state *matrix_init(struct term_buf *buf) {
-	struct matrix_state *s = malloc_or_throw(sizeof(struct matrix_state));
+	struct matrix_state *s = malloc_or_throw(sizeof(*s));
 
 	uint16_t len = buf->height + 1;
-	s->grid = malloc_or_throw(sizeof(struct matrix_dot *) * len);
+	s->grid = malloc_or_throw(sizeof(*s->grid) * len); // NOLINT
 
 	len = (buf->height + 1) * buf->width;
-	(s->grid)[0] = malloc_or_throw(sizeof(struct matrix_dot) * len);
+	(s->grid)[0] = malloc_or_throw(sizeof((s->grid)[0]) * len); // NOLINT
 
 	for(int i = 1; i <= buf->height; ++i) {
 		s->grid[i] = s->grid[i - 1] + buf->width;
 	}
 
-	s->length = malloc_or_throw(buf->width * sizeof(int));
+	s->length = malloc_or_throw(buf->width * sizeof(*s->length));
 
-	s->spaces = malloc_or_throw(buf->width * sizeof(int));
+	s->spaces = malloc_or_throw(buf->width * sizeof(*s->spaces));
 
-	s->updates = malloc_or_throw(buf->width * sizeof(int));
+	s->updates = malloc_or_throw(buf->width * sizeof(*s->updates));
 
 	if(buf->height <= 3) {
 		return s;

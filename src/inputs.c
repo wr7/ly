@@ -135,12 +135,12 @@ void input_desktop_add(struct desktop *target, char *name, char *cmd,
                        enum display_server display_server) {
 	++(target->len);
 	target->list =
-		realloc_or_throw(target->list, target->len * (sizeof(char *)));
+		realloc_or_throw(target->list, target->len * (sizeof(*target->list)));
 	target->list_simple =
-		realloc_or_throw(target->list_simple, target->len * (sizeof(char *)));
-	target->cmd = realloc_or_throw(target->cmd, target->len * (sizeof(char *)));
+		realloc_or_throw(target->list_simple, target->len * (sizeof(*target->list_simple)));
+	target->cmd = realloc_or_throw(target->cmd, target->len * (sizeof(*target->cmd)));
 	target->display_server = realloc_or_throw(
-		target->display_server, target->len * (sizeof(enum display_server)));
+		target->display_server, target->len * (sizeof(*target->display_server)));
 	target->cur = target->len - 1;
 
 	target->list[target->cur] = name;

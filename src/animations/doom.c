@@ -9,7 +9,7 @@ struct doom_state {
 };
 
 struct doom_state *doom_init(struct term_buf *buf) {
-	struct doom_state *state = malloc_or_throw(sizeof(struct doom_state));
+	struct doom_state *state = malloc_or_throw(sizeof(*state));
 
 	uint16_t tmp_len = buf->width * buf->height;
 	state->buf = malloc_or_throw(tmp_len);
