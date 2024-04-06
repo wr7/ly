@@ -2,7 +2,7 @@
 #define H_LYE_DRAW
 
 #include "inputs.h"
-#include "termbox.h"
+#include "termbox2.h"
 
 #include <stdbool.h>
 #include <stdint.h>

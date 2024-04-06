@@ -1,7 +1,7 @@
 #include "argoat.h"
 #include "configator.h"
 #include "dragonfail.h"
-#include "termbox.h"
+#include "termbox2.h"
 
 #include "animations.h"
 #include "config.h"
@@ -131,7 +131,7 @@ int main(int argc, char **argv) {
 		fprintf(stderr, "Failed to initialize termbox.\n");
 		abort();
 	}
-	tb_select_output_mode(TB_OUTPUT_NORMAL);
+	tb_set_output_mode(TB_OUTPUT_NORMAL);
 	tb_clear();
 
 	// init visible elements

@@ -1,7 +1,7 @@
 #ifndef H_LYE_INPUTS
 #define H_LYE_INPUTS
 
-#include "termbox.h"
+#include "termbox2.h"
 
 #include <stdint.h>
 
