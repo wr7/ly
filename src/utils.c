@@ -72,6 +72,7 @@ static char *mfgets(FILE *file, char *buf, size_t *buf_sz) {
 
 	do {
 		ch = fgetc(file);
+
 		if(ch == EOF || ch == '\n' || ch == '\r') {
 			char_to_add = '\0';
 		} else {
@@ -82,6 +83,8 @@ static char *mfgets(FILE *file, char *buf, size_t *buf_sz) {
 			*buf_sz *= 2;
 			buf = realloc_or_throw(buf, *buf_sz * sizeof(*buf));
 		}
+
+		buf[char_idx] = char_to_add;
 
 		char_idx += 1;
 	} while(char_to_add != '\0');
