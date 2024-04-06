@@ -5,7 +5,7 @@
 #include "dragonfail_error.h"
 #include "draw.h"
 #include "stdio.h"
-#include "termbox.h"
+#include "termbox2.h"
 #include "utils.h"
 
 #include "animations/blizzard.h"

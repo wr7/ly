@@ -1,5 +1,7 @@
 #include "dragonfail.h"
-#include "termbox.h"
+
+#define TB_OPT_V1_COMPAT
+#include "termbox2.h"
 
 #include "animations.h"
 #include "bigclock.h"
@@ -202,7 +204,7 @@ void draw_clock(struct term_buf *buf) {
 	int clockstrlen = strlen(clockstr);
 
 	struct tb_cell *cells = strn_cell(clockstr, clockstrlen);
-	tb_blit(buf->width - clockstrlen, 0, clockstrlen, 1, cells);
+	draw_cells(buf->width - clockstrlen, 0, clockstrlen, 1, cells);
 
 	free(clockstr);
 	free(cells);
@@ -219,7 +221,7 @@ struct tb_cell *strn_cell(char *s, uint16_t len) // throws
 			break;
 		}
 
-		s2 += utf8_char_to_unicode(&c, s2);
+		s2 += tb_utf8_char_to_unicode(&c, s2);
 
 		cells[i].ch = c;
 		cells[i].bg = config.bg;
@@ -242,7 +244,7 @@ void draw_labels(struct term_buf *buf) // throws
 	if(dgn_catch()) {
 		dgn_reset();
 	} else {
-		tb_blit(buf->box_x + config.margin_box_h,
+		draw_cells(buf->box_x + config.margin_box_h,
 		        buf->box_y + config.margin_box_v + 4, strlen(lang.login), 1,
 		        login);
 		free(login);
@@ -254,7 +256,7 @@ void draw_labels(struct term_buf *buf) // throws
 	if(dgn_catch()) {
 		dgn_reset();
 	} else {
-		tb_blit(buf->box_x + config.margin_box_h,
+		draw_cells(buf->box_x + config.margin_box_h,
 		        buf->box_y + config.margin_box_v + 6, strlen(lang.password), 1,
 		        password);
 		free(password);
@@ -267,7 +269,7 @@ void draw_labels(struct term_buf *buf) // throws
 		if(dgn_catch()) {
 			dgn_reset();
 		} else {
-			tb_blit(buf->box_x + ((buf->box_width - len) / 2),
+			draw_cells(buf->box_x + ((buf->box_width - len) / 2),
 			        buf->box_y + config.margin_box_v, len, 1, info_cell);
 			free(info_cell);
 		}
@@ -280,7 +282,7 @@ void draw_key_hints() {
 	if(dgn_catch()) {
 		dgn_reset();
 	} else {
-		tb_blit(0, 0, len, 1, shutdown_key);
+		draw_cells(0, 0, len, 1, shutdown_key);
 		free(shutdown_key);
 	}
 
@@ -289,7 +291,7 @@ void draw_key_hints() {
 	if(dgn_catch()) {
 		dgn_reset();
 	} else {
-		tb_blit(len, 0, strlen(lang.shutdown), 1, shutdown);
+		draw_cells(len, 0, strlen(lang.shutdown), 1, shutdown);
 		free(shutdown);
 	}
 
@@ -298,7 +300,7 @@ void draw_key_hints() {
 	if(dgn_catch()) {
 		dgn_reset();
 	} else {
-		tb_blit(len, 0, strlen(config.restart_key), 1, restart_key);
+		draw_cells(len, 0, strlen(config.restart_key), 1, restart_key);
 		free(restart_key);
 	}
 
@@ -307,7 +309,7 @@ void draw_key_hints() {
 	if(dgn_catch()) {
 		dgn_reset();
 	} else {
-		tb_blit(len, 0, strlen(lang.restart), 1, restart);
+		draw_cells(len, 0, strlen(lang.restart), 1, restart);
 		free(restart);
 	}
 }
@@ -351,7 +353,7 @@ void draw_lock_state(struct term_buf *buf) {
 		if(dgn_catch()) {
 			dgn_reset();
 		} else {
-			tb_blit(pos_x, pos_y, strlen(lang.numlock), 1, numlock);
+			draw_cells(pos_x, pos_y, strlen(lang.numlock), 1, numlock);
 			free(numlock);
 		}
 	}
@@ -364,7 +366,7 @@ void draw_lock_state(struct term_buf *buf) {
 		if(dgn_catch()) {
 			dgn_reset();
 		} else {
-			tb_blit(pos_x, pos_y, strlen(lang.capslock), 1, capslock);
+			draw_cells(pos_x, pos_y, strlen(lang.capslock), 1, capslock);
 			free(capslock);
 		}
 	}
@@ -401,7 +403,7 @@ void draw_input(struct text *input) {
 	if(dgn_catch()) {
 		dgn_reset();
 	} else {
-		tb_blit(input->x, input->y, len, 1, cells);
+		draw_cells(input->x, input->y, len, 1, cells);
 		free(cells);
 
 		struct tb_cell c1 = {' ', config.fg, config.bg};

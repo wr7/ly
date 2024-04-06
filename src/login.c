@@ -1,5 +1,5 @@
 #include "dragonfail.h"
-#include "termbox.h"
+#include "termbox2.h"
 
 #include "config.h"
 #include "draw.h"
@@ -565,7 +565,7 @@ void auth(struct desktop *desktop, struct text *login, struct text *password,
 
 	// reinit termbox
 	tb_init();
-	tb_select_output_mode(TB_OUTPUT_NORMAL);
+	tb_set_output_mode(TB_OUTPUT_NORMAL);
 
 	// reload the desktop environment list on logout
 	input_desktop_free(desktop);

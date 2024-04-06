@@ -28,7 +28,7 @@ INCL+= -I$(SUBD)/ctypes
 INCL+= -I$(SUBD)/argoat/src
 INCL+= -I$(SUBD)/configator/src
 INCL+= -I$(SUBD)/dragonfail/src
-INCL+= -I$(SUBD)/termbox_next/src
+INCL+= -I$(SUBD)/termbox2
 
 SRCS = $(SRCD)/main.c
 SRCS += $(SRCD)/animations.c
@@ -40,13 +40,13 @@ SRCS += $(SRCD)/config.c
 SRCS += $(SRCD)/draw.c
 SRCS += $(SRCD)/inputs.c
 SRCS += $(SRCD)/login.c
+SRCS += $(SRCD)/termbox.c
 SRCS += $(SRCD)/utils.c
 SRCS += $(SUBD)/argoat/src/argoat.c
 SRCS += $(SUBD)/configator/src/configator.c
 SRCS += $(SUBD)/dragonfail/src/dragonfail.c
 
 SRCS_OBJS:= $(patsubst %.c,$(OBJD)/%.o,$(SRCS))
-SRCS_OBJS+= $(SUBD)/termbox_next/bin/termbox.a
 
 .PHONY: final
 final: $(BIND)/$(NAME)
@@ -55,10 +55,6 @@ $(OBJD)/%.o: %.c
 	@echo "building object $@"
 	@mkdir -p $(@D)
 	@$(CC) $(INCL) $(FLAGS) -c -o $@ $<
-
-$(SUBD)/termbox_next/bin/termbox.a:
-	@echo "building static object $@"
-	@(cd $(SUBD)/termbox_next && $(MAKE))
 
 $(BIND)/$(NAME): $(SRCS_OBJS)
 	@echo "compiling executable $@"
@@ -122,4 +118,3 @@ uninstall:
 clean:
 	@echo "cleaning"
 	@rm -rf $(BIND) $(OBJD) valgrind.log
-	@(cd $(SUBD)/termbox_next && $(MAKE) clean)

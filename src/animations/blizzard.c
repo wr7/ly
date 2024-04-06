@@ -3,7 +3,7 @@
 #include "bits/time.h"
 #include "draw.h"
 #include "stdlib.h"
-#include "termbox.h"
+#include "termbox2.h"
 #include "utils.h"
 #include <stdint.h>
 #include <time.h>

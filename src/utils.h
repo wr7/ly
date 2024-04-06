@@ -12,6 +12,7 @@
 
 void *malloc_or_throw(size_t size);
 void *realloc_or_throw(void *old, size_t size);
+void draw_cells(uint16_t x, uint16_t y, uint16_t w, uint16_t h, struct tb_cell *cells); // Jank
 void desktop_load(struct desktop *target);
 void hostname(char **out);
 void free_hostname();

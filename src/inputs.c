@@ -1,7 +1,7 @@
 #include "inputs.h"
 #include "config.h"
 #include "dragonfail.h"
-#include "termbox.h"
+#include "termbox2.h"
 #include "utils.h"
 
 #include <ctype.h>
@@ -45,7 +45,7 @@ void handle_text(void *input_struct, struct tb_event *event) {
 			if(event->key == TB_KEY_SPACE) {
 				buf[0] = ' ';
 			} else {
-				utf8_unicode_to_char(buf, event->ch);
+				tb_utf8_unicode_to_char(buf, event->ch);
 			}
 
 			input_text_write(target, buf[0]);

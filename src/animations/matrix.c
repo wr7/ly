@@ -140,7 +140,7 @@ void matrix(struct matrix_state *s, struct term_buf *buf) {
 	}
 
 	uint32_t blank;
-	utf8_char_to_unicode(&blank, " ");
+	tb_utf8_char_to_unicode(&blank, " ");
 
 	for(int j = 0; j < buf->width; j += 2) {
 		for(int i = 1; i <= buf->height; ++i) {
@@ -149,18 +149,18 @@ void matrix(struct matrix_state *s, struct term_buf *buf) {
 			int bg = TB_DEFAULT;
 
 			if(s->grid[i][j].val == -1 || s->grid[i][j].val == ' ') {
-				tb_change_cell(j, i - 1, blank, fg, bg);
+				tb_set_cell(j, i - 1, blank, fg, bg);
 				continue;
 			}
 
 			char tmp[2];
 			tmp[0] = s->grid[i][j].val;
 			tmp[1] = '\0';
-			if(utf8_char_to_unicode(&c, tmp)) {
+			if(tb_utf8_char_to_unicode(&c, tmp)) {
 				if(s->grid[i][j].is_head) {
 					fg = TB_WHITE | TB_BOLD;
 				}
-				tb_change_cell(j, i - 1, c, fg, bg);
+				tb_set_cell(j, i - 1, c, fg, bg);
 			}
 		}
 	}

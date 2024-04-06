@@ -40,6 +40,21 @@ void *realloc_or_throw(void *old, size_t size) {
 	return new;
 }
 
+void draw_cells(uint16_t x, uint16_t y, uint16_t w, uint16_t h, struct tb_cell *cells) { // Jank
+	const size_t buf_width = tb_width();
+
+	struct tb_cell *buf = tb_cell_buffer();
+
+	struct tb_cell *src = cells;
+	struct tb_cell *dst = buf + y * buf_width + x;
+
+	for(size_t i = 0; i < h; i++) {
+		memcpy(dst, src, w * sizeof(*cells));
+		dst += buf_width;
+		src += w;
+	}
+}
+
 void desktop_crawl(struct desktop *target, char *sessions,
                    enum display_server server) {
 	DIR *dir;
