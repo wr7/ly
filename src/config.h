@@ -77,9 +77,6 @@ struct config {
 	bool load;
 	uint8_t margin_box_h;
 	uint8_t margin_box_v;
-	uint8_t max_desktop_len;
-	uint8_t max_login_len;
-	uint8_t max_password_len;
 	char *mcookie_cmd;
 	uint16_t min_refresh_delta;
 	char *path;

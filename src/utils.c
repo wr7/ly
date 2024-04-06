@@ -55,6 +55,40 @@ void draw_cells(uint16_t x, uint16_t y, uint16_t w, uint16_t h, struct tb_cell *
 	}
 }
 
+static char *mfgets(FILE *file, char *buf, size_t *buf_sz) {
+	if(buf_sz == NULL) {
+		size_t b = 32;
+		buf_sz = &b;
+	}
+
+	if(buf == NULL) {
+		*buf_sz = 32;
+		char *buf = malloc_or_throw(sizeof(*buf)**buf_sz);
+	}
+
+	size_t char_idx = 0;
+	int ch;
+	char char_to_add;
+
+	do {
+		ch = fgetc(file);
+		if(ch == EOF || ch == '\n' || ch == '\r') {
+			char_to_add = '\0';
+		} else {
+			char_to_add = (char) ch;
+		}
+
+		if(char_idx >= *buf_sz) {
+			*buf_sz *= 2;
+			buf = realloc_or_throw(buf, *buf_sz * sizeof(*buf));
+		}
+
+		char_idx += 1;
+	} while(char_to_add != '\0');
+
+	return buf;
+}
+
 void desktop_crawl(struct desktop *target, char *sessions,
                    enum display_server server) {
 	DIR *dir;
@@ -231,35 +265,24 @@ void load(struct desktop *desktop, struct text *login) {
 		return;
 	}
 
-	char *line = malloc(config.max_login_len + 1);
+	size_t line_size;
+	char *line = mfgets(fp, NULL, &line_size);
 
-	if(line == NULL) {
-		fclose(fp);
-		return;
-	}
+	int len = strlen(line);
+	strncpy(login->text, line, login->len);
 
-	if(fgets(line, config.max_login_len + 1, fp)) {
-		int len = strlen(line);
-		strncpy(login->text, line, login->len);
-
-		if(len == 0) {
-			login->end = login->text;
-		} else {
-			login->end = login->text + len - 1;
-			login->text[len - 1] = '\0';
-		}
+	if(len == 0) {
+		login->end = login->text;
 	} else {
-		fclose(fp);
-		free(line);
-		return;
+		login->end = login->text + len - 1;
+		login->text[len - 1] = '\0';
 	}
 
-	if(fgets(line, config.max_login_len + 1, fp)) {
-		int saved_cur = abs(atoi(line));
+	mfgets(fp, line, &line_size);
+	int saved_cur = abs(atoi(line));
 
-		if(saved_cur < desktop->len) {
-			desktop->cur = saved_cur;
-		}
+	if(saved_cur < desktop->len) {
+		desktop->cur = saved_cur;
 	}
 
 	fclose(fp);

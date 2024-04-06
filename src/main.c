@@ -99,8 +99,8 @@ int main(int argc, char **argv) {
 	struct text login;
 	struct text password;
 	input_desktop(&desktop);
-	input_text(&login, config.max_login_len);
-	input_text(&password, config.max_password_len);
+	input_text(&login);
+	input_text(&password);
 
 	if(dgn_catch()) {
 		config_free();
