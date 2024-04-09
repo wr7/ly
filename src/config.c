@@ -156,9 +156,6 @@ void config_load(const char *cfg_path) {
 		{"load", &config.load, config_handle_bool},
 		{"margin_box_h", &config.margin_box_h, config_handle_u8},
 		{"margin_box_v", &config.margin_box_v, config_handle_u8},
-		{"max_desktop_len", &config.max_desktop_len, config_handle_u8},
-		{"max_login_len", &config.max_login_len, config_handle_u8},
-		{"max_password_len", &config.max_password_len, config_handle_u8},
 		{"mcookie_cmd", &config.mcookie_cmd, config_handle_str},
 		{"min_refresh_delta", &config.min_refresh_delta, config_handle_u16},
 		{"path", &config.path, config_handle_str},
@@ -265,9 +262,6 @@ void config_defaults() {
 	config.load = true;
 	config.margin_box_h = 2;
 	config.margin_box_v = 1;
-	config.max_desktop_len = 100;
-	config.max_login_len = 255;
-	config.max_password_len = 255;
 	config.mcookie_cmd = strdup("/usr/bin/mcookie");
 	config.min_refresh_delta = 5;
 	config.path =

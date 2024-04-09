@@ -35,7 +35,8 @@ struct desktop {
 void handle_desktop(void *input_struct, struct tb_event *event);
 void handle_text(void *input_struct, struct tb_event *event);
 void input_desktop(struct desktop *target);
-void input_text(struct text *target, uint64_t len);
+void input_text_resize(struct text *target, int64_t new_size);
+void input_text(struct text *target);
 void input_desktop_free(struct desktop *target);
 void input_text_free(struct text *target);
 void input_desktop_right(struct desktop *target);

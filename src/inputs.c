@@ -71,24 +71,34 @@ void input_desktop(struct desktop *target) {
 #endif
 }
 
-void input_text(struct text *target, uint64_t len) {
-	target->text = malloc_or_throw(len + 1);
+void input_text(struct text *target) {
+	target->len = 32;
+	target->text = malloc_or_throw(sizeof(char)*target->len);
 
-	int ok = mlock(target->text, len + 1);
-
-	if(ok < 0) {
-		dgn_throw(DGN_MLOCK);
-		return;
-	}
-
-	memset(target->text, 0, len + 1);
+	memset(target->text, 0, target->len);
 
 	target->cur = target->text;
 	target->end = target->text;
 	target->visible_start = target->text;
-	target->len = len;
 	target->x = 0;
 	target->y = 0;
+}
+
+void input_text_resize(struct text *target, int64_t new_size) {
+	if(new_size <= target->len) {
+		return;
+	}
+
+	target->len = new_size;
+
+	const ssize_t end_offset = target->end - target->text;
+	const ssize_t cur_offset = target->cur - target->text;
+	const ssize_t vstart_offset = target->visible_start- target->text;
+
+	target->text = realloc_or_throw(target->text, target->len);
+	target->end = target->text + end_offset;
+	target->cur = target->text + cur_offset;
+	target->visible_start = target->text + vstart_offset;
 }
 
 void input_desktop_free(struct desktop *target) {
@@ -111,7 +121,6 @@ void input_desktop_free(struct desktop *target) {
 
 void input_text_free(struct text *target) {
 	memset(target->text, 0, target->len);
-	munlock(target->text, target->len + 1);
 	free(target->text);
 }
 
@@ -187,14 +196,16 @@ void input_text_write(struct text *target, char ascii) {
 		        // ascii
 	}
 
-	if((target->end - target->text + 1) < target->len) {
-		// moves the text to the right to add space for the new ascii char
-		memcpy(target->cur + 1, target->cur, target->end - target->cur);
-		++(target->end);
-		// adds the new char and moves the cursor to the right
-		*(target->cur) = ascii;
-		input_text_right(target);
+	if((target->end - target->text + 1) >= target->len) {
+		input_text_resize(target, 2*target->len);
 	}
+
+	// moves the text to the right to add space for the new ascii char
+	memcpy(target->cur + 1, target->cur, target->end - target->cur);
+	++(target->end);
+	// adds the new char and moves the cursor to the right
+	*(target->cur) = ascii;
+	input_text_right(target);
 }
 
 void input_text_delete(struct text *target) {
@@ -213,7 +224,7 @@ void input_text_backspace(struct text *target) {
 }
 
 void input_text_clear(struct text *target) {
-	memset(target->text, 0, target->len + 1);
+	memset(target->text, 0, target->len);
 	target->cur = target->text;
 	target->end = target->text;
 	target->visible_start = target->text;
