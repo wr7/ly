@@ -55,6 +55,13 @@ void draw_cells(uint16_t x, uint16_t y, uint16_t w, uint16_t h, struct tb_cell *
 	}
 }
 
+/**
+ * Reads a line from `file`. `buf_sz` and `buf` can be used to attempt to reuse 
+ * a buffer. Said buffer will be `realloc`ed when necessary, and its size will 
+ * be written to `buf_sz`.
+ *
+ * Note: if `buf` is non-null, buf_sz must point to the buffer's size.
+ */
 static char *mfgets(FILE *file, char *buf, size_t *buf_sz) {
 	if(buf_sz == NULL) {
 		size_t b = 32;
@@ -63,7 +70,7 @@ static char *mfgets(FILE *file, char *buf, size_t *buf_sz) {
 
 	if(buf == NULL) {
 		*buf_sz = 32;
-		char *buf = malloc_or_throw(sizeof(*buf)**buf_sz);
+		buf = malloc_or_throw(sizeof(*buf)**buf_sz);
 	}
 
 	size_t char_idx = 0;
@@ -272,6 +279,8 @@ void load(struct desktop *desktop, struct text *login) {
 	char *line = mfgets(fp, NULL, &line_size);
 
 	int len = strlen(line);
+	input_text_resize(login, len + 1);
+
 	strncpy(login->text, line, login->len);
 
 	if(len == 0) {

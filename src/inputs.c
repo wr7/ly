@@ -84,6 +84,23 @@ void input_text(struct text *target) {
 	target->y = 0;
 }
 
+void input_text_resize(struct text *target, int64_t new_size) {
+	if(new_size <= target->len) {
+		return;
+	}
+
+	target->len = new_size;
+
+	const ssize_t end_offset = target->end - target->text;
+	const ssize_t cur_offset = target->cur - target->text;
+	const ssize_t vstart_offset = target->visible_start- target->text;
+
+	target->text = realloc_or_throw(target->text, target->len);
+	target->end = target->text + end_offset;
+	target->cur = target->text + cur_offset;
+	target->visible_start = target->text + vstart_offset;
+}
+
 void input_desktop_free(struct desktop *target) {
 	if(target != NULL) {
 		for(uint16_t i = 0; i < target->len; ++i) {
@@ -180,16 +197,7 @@ void input_text_write(struct text *target, char ascii) {
 	}
 
 	if((target->end - target->text + 1) >= target->len) {
-		target->len *= 2;
-
-		const ssize_t end_offset = target->end - target->text;
-		const ssize_t cur_offset = target->cur - target->text;
-		const ssize_t vstart_offset = target->visible_start- target->text;
-
-		target->text = realloc_or_throw(target->text, target->len);
-		target->end = target->text + end_offset;
-		target->cur = target->text + cur_offset;
-		target->visible_start = target->text + vstart_offset;
+		input_text_resize(target, 2*target->len);
 	}
 
 	// moves the text to the right to add space for the new ascii char
