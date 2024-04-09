@@ -6,15 +6,8 @@
 Lye (Ly Extended) is a fork of [Ly](https://github.com/fairyglade/ly), a lightweight TUI (ncurses-like) display manager for Linux and BSD.
 
 ## Fork
-The upstream Ly hasn't been updated recently. Lye was made to add several bug fixes and features.
 
-The long term plans of Lye are as follows:
- - Clean up code
-   - Break up files
-   - Break up functions
-   - Reduce code size and complexity
- - Add new animations
- - Improve compatibility (notably with Nix)
+Lye contains several bug fixes and new features not contained in upstream Ly.
 
 ## Animations
 Currently Lye has the following animations. The ones unique to lye are denoted with a star.
